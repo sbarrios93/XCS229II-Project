@@ -1,0 +1,984 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c}{\PYGZpc{} This template has been tested with IEEEtran of 2015.}
+
+\PYG{c}{\PYGZpc{} !TeX spellcheck = en\PYGZhy{}US}
+\PYG{c}{\PYGZpc{} !TeX encoding = utf8}
+\PYG{c}{\PYGZpc{} !TeX program = pdflatex}
+\PYG{c}{\PYGZpc{} !TeX TXS\PYGZhy{}program:compile = txs:///pdflatex/[\PYGZhy{}\PYGZhy{}shell\PYGZhy{}escape]}
+\PYG{c}{\PYGZpc{} !BIB program = bibtex}
+\PYG{c}{\PYGZpc{} \PYGZhy{}*\PYGZhy{} coding:utf\PYGZhy{}8 mod:LaTeX \PYGZhy{}*\PYGZhy{}}
+\PYG{c}{\PYGZpc{} DO NOT DOWNLOAD IEEEtran.cls \PYGZhy{} Use the one of your LaTeX distribution}
+\PYG{c}{\PYGZpc{} For the final version, replace \PYGZdq{}draftcls\PYGZdq{} by \PYGZdq{}final\PYGZdq{}}
+\PYG{k}{\PYGZbs{}documentclass}\PYG{n+na}{[journal,letterpaper]}\PYG{n+nb}{\PYGZob{}}IEEEtran\PYG{n+nb}{\PYGZcb{}}[2015/08/26]
+
+\PYG{c}{\PYGZpc{} Balance the last page}
+\PYG{c}{\PYGZpc{} The pbalance package (see https://ctan.org/pkg/pbalance) \PYGZdq{}just works\PYGZdq{} (in contrast to balance.sty or other solutions)}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}pbalance\PYG{n+nb}{\PYGZcb{}}
+
+
+\PYG{c}{\PYGZpc{} backticks (`) are rendered as such in verbatim environments.}
+\PYG{c}{\PYGZpc{} See following links for details:}
+\PYG{c}{\PYGZpc{}   \PYGZhy{} https://tex.stackexchange.com/a/341057/9075}
+\PYG{c}{\PYGZpc{}   \PYGZhy{} https://tex.stackexchange.com/a/47451/9075}
+\PYG{c}{\PYGZpc{}   \PYGZhy{} https://tex.stackexchange.com/a/166791/9075}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}upquote\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Set English as language and allow to write hyphenated\PYGZdq{}=words}
+\PYG{c}{\PYGZpc{}}
+\PYG{c}{\PYGZpc{} Even though `american`, `english` and `USenglish` are synonyms for babel package (according to https://tex.stackexchange.com/questions/12775/babel\PYGZhy{}english\PYGZhy{}american\PYGZhy{}usenglish), the llncs document class is prepared to avoid the overriding of certain names (such as \PYGZdq{}Abstract.\PYGZdq{} \PYGZhy{}\PYGZgt{} \PYGZdq{}Abstract\PYGZdq{} or \PYGZdq{}Fig.\PYGZdq{} \PYGZhy{}\PYGZgt{} \PYGZdq{}Figure\PYGZdq{}) when using `english`, but not when using the other 2.}
+\PYG{c}{\PYGZpc{} english has to go last to set it as default language}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[ngerman,main=english]}\PYG{n+nb}{\PYGZob{}}babel\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}}
+\PYG{c}{\PYGZpc{} Hint by http://tex.stackexchange.com/a/321066/9075 \PYGZhy{}\PYGZgt{} enable \PYGZdq{}= as dashes}
+\PYG{k}{\PYGZbs{}addto\PYGZbs{}extrasenglish}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}languageshorthands}\PYG{n+nb}{\PYGZob{}}ngerman\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}useshorthands}\PYG{n+nb}{\PYGZob{}}\PYGZdq{}\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Links behave as they should. Enables \PYGZdq{}\PYGZbs{}url\PYGZob{}...\PYGZcb{}\PYGZdq{} for URL typesettings.}
+\PYG{c}{\PYGZpc{} Allow URL breaks also at a hyphen, even though it might be confusing: Is the \PYGZdq{}\PYGZhy{}\PYGZdq{} part of the address or just a hyphen?}
+\PYG{c}{\PYGZpc{} See https://tex.stackexchange.com/a/3034/9075.}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[hyphens]}\PYG{n+nb}{\PYGZob{}}url\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} When activated, use text font as url font, not the monospaced one.}
+\PYG{c}{\PYGZpc{} For all options see https://tex.stackexchange.com/a/261435/9075.}
+\PYG{c}{\PYGZpc{} \PYGZbs{}urlstyle\PYGZob{}same\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Improve wrapping of URLs \PYGZhy{} hint by http://tex.stackexchange.com/a/10419/9075}
+\PYG{k}{\PYGZbs{}makeatletter}
+\PYG{k}{\PYGZbs{}g}@addto@macro\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}UrlBreaks}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}UrlOrds}\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}makeatother}
+
+\PYG{c}{\PYGZpc{} nicer // \PYGZhy{} solution by http://tex.stackexchange.com/a/98470/9075}
+\PYG{c}{\PYGZpc{} DO NOT ACTIVATE \PYGZhy{}\PYGZgt{} prevents line breaks}
+\PYG{c}{\PYGZpc{}\PYGZbs{}makeatletter}
+\PYG{c}{\PYGZpc{}\PYGZbs{}def\PYGZbs{}Url@twoslashes\PYGZob{}\PYGZbs{}mathchar`\PYGZbs{}/\PYGZbs{}@ifnextchar/\PYGZob{}\PYGZbs{}kern\PYGZhy{}.2em\PYGZcb{}\PYGZob{}\PYGZcb{}\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}g@addto@macro\PYGZbs{}UrlSpecials\PYGZob{}\PYGZbs{}do\PYGZbs{}/\PYGZob{}\PYGZbs{}Url@twoslashes\PYGZcb{}\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}makeatother}
+
+
+\PYG{c}{\PYGZpc{} use nicer font for code}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[zerostyle=b,scaled=.75]}\PYG{n+nb}{\PYGZob{}}newtxtt\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Has to be loaded AFTER any font packages. See https://tex.stackexchange.com/a/2869/9075.}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[T1]}\PYG{n+nb}{\PYGZob{}}fontenc\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Character protrusion and font expansion. See http://www.ctan.org/tex\PYGZhy{}archive/macros/latex/contrib/microtype/}
+
+\PYG{k}{\PYGZbs{}usepackage}[
+  babel=true, \PYG{c}{\PYGZpc{} Enable language\PYGZhy{}specific kerning. Take language\PYGZhy{}settings from the languge of the current document (see Section 6 of microtype.pdf)}
+  expansion=alltext,
+  protrusion=alltext\PYGZhy{}nott, \PYG{c}{\PYGZpc{} Ensure that at listings, there is no change at the margin of the listing}
+  final \PYG{c}{\PYGZpc{} Always enable microtype, even if in draft mode. This helps finding bad boxes quickly.}
+        \PYG{c}{\PYGZpc{} In the standard configuration, this template is always in the final mode, so this option only makes a difference if \PYGZdq{}pros\PYGZdq{} use the draft mode}
+]\PYG{n+nb}{\PYGZob{}}microtype\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} \PYGZbs{}texttt\PYGZob{}test \PYGZhy{}\PYGZhy{} test\PYGZcb{} keeps the \PYGZdq{}\PYGZhy{}\PYGZhy{}\PYGZdq{} as \PYGZdq{}\PYGZhy{}\PYGZhy{}\PYGZdq{} (and does not convert it to an en dash)}
+\PYG{k}{\PYGZbs{}DisableLigatures}\PYG{n+nb}{\PYGZob{}}encoding = T1, family = tt* \PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}\PYGZbs{}DeclareMicrotypeSet*[tracking]\PYGZob{}my\PYGZcb{}\PYGZob{} font = */*/*/sc/* \PYGZcb{}\PYGZpc{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}SetTracking\PYGZob{} encoding = *, shape = sc \PYGZcb{}\PYGZob{} 45 \PYGZcb{}}
+\PYG{c}{\PYGZpc{} Source: http://homepage.ruhr\PYGZhy{}uni\PYGZhy{}bochum.de/Georg.Verweyen/pakete.html}
+\PYG{c}{\PYGZpc{} Deactiviated, because does not look good}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}graphicx\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Diagonal lines in a table \PYGZhy{} http://tex.stackexchange.com/questions/17745/diagonal\PYGZhy{}lines\PYGZhy{}in\PYGZhy{}table\PYGZhy{}cell}
+\PYG{c}{\PYGZpc{} Slashbox is not available in texlive (due to licensing) and also gives bad results. Thus, we use diagbox}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}diagbox\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}xcolor\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[newfloat]}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Line numbers not flowing out of the margin}
+\PYG{k}{\PYGZbs{}setminted}\PYG{n+nb}{\PYGZob{}}numbersep=5pt, xleftmargin=12pt\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}usemintedstyle}\PYG{n+nb}{\PYGZob{}}bw\PYG{n+nb}{\PYGZcb{}} \PYG{c}{\PYGZpc{}black and white style}
+\PYG{c}{\PYGZpc{}\PYGZbs{}usemintedstyle\PYGZob{}vs\PYGZcb{} \PYGZpc{}visual studio}
+\PYG{c}{\PYGZpc{}\PYGZbs{}usemintedstyle\PYGZob{}friendlygrayscale\PYGZcb{} \PYGZpc{} custom style \PYGZhy{} submitted as pull request https://bitbucket.org/birkenfeld/pygments\PYGZhy{}main/pull\PYGZhy{}requests/748/add\PYGZhy{}style\PYGZhy{}friendly\PYGZhy{}grayscale/diff}
+\PYG{c}{\PYGZpc{}\PYGZbs{}usemintedstyle\PYGZob{}friendly\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}usemintedstyle\PYGZob{}eclipse\PYGZcb{} \PYGZpc{}http://www.jevon.org/wiki/Eclipse\PYGZus{}Pygments\PYGZus{}Style}
+\PYG{c}{\PYGZpc{}\PYGZbs{}usemintedstyle\PYGZob{}autumn\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}usemintedstyle\PYGZob{}rrt\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}usemintedstyle\PYGZob{}borland\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} We need to load caption to have a bold font on the label}
+\PYG{c}{\PYGZpc{} The other parameters mimic the layout of the LNCS class}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[labelfont=bf,font=small,skip=4pt]}\PYG{n+nb}{\PYGZob{}}caption\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}SetupFloatingEnvironment}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}\PYGZob{}}name=List.,within=none\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} When using both minted and listings}
+\PYG{c}{\PYGZpc{} Compatibility of packages minted and listings with respect to the numbering of \PYGZdq{}List.\PYGZdq{} caption}
+\PYG{c}{\PYGZpc{} Source: https://tex.stackexchange.com/a/269510/9075}
+\PYG{c}{\PYGZpc{} \PYGZbs{}AtBeginEnvironment\PYGZob{}listing\PYGZcb{}\PYGZob{}\PYGZbs{}setcounter\PYGZob{}listing\PYGZcb{}\PYGZob{}\PYGZbs{}value\PYGZob{}lstlisting\PYGZcb{}\PYGZcb{}\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZbs{}AtEndEnvironment\PYGZob{}listing\PYGZcb{}\PYGZob{}\PYGZbs{}stepcounter\PYGZob{}lstlisting\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Intermediate solution for hyperlinked refs. See https://tex.stackexchange.com/q/132420/9075 for more information.}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}labelline}\PYG{n+nb}{\PYGZcb{}}[1]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}label}\PYG{n+na}{[line]}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}hypertarget}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZob{}\PYGZcb{}\PYGZcb{}}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}refline}\PYG{n+nb}{\PYGZcb{}}[1]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}hyperlink}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}FancyVerbLineautorefname}\PYGZti{}\PYG{k}{\PYGZbs{}ref*}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} For easy quotations: \PYGZbs{}enquote\PYGZob{}text\PYGZcb{}}
+\PYG{c}{\PYGZpc{} This package is very smart when nesting is applied, otherwise textcmds (see below) provides a shorter command}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[autostyle=true]}\PYG{n+nb}{\PYGZob{}}csquotes\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable using \PYGZdq{}`quote\PYGZdq{}\PYGZsq{} \PYGZhy{} see https://tex.stackexchange.com/a/150954/9075}
+\PYG{k}{\PYGZbs{}defineshorthand}\PYG{n+nb}{\PYGZob{}}\PYGZdq{}`\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}openautoquote}\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}defineshorthand}\PYG{n+nb}{\PYGZob{}}\PYGZdq{}\PYGZsq{}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}closeautoquote}\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Nicer tables (\PYGZbs{}toprule, \PYGZbs{}midrule, \PYGZbs{}bottomrule)}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}booktabs\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Extended enumerate, such as \PYGZbs{}begin\PYGZob{}compactenum\PYGZcb{}}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}paralist\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Bibliopgraphy enhancements}
+\PYG{c}{\PYGZpc{}  \PYGZhy{} enable \PYGZbs{}cite[prenote][]\PYGZob{}ref\PYGZcb{}}
+\PYG{c}{\PYGZpc{}  \PYGZhy{} enable \PYGZbs{}cite\PYGZob{}ref1,ref2\PYGZcb{}}
+\PYG{c}{\PYGZpc{} Alternative: \PYGZbs{}usepackage\PYGZob{}cite\PYGZcb{}, which enables \PYGZbs{}cite\PYGZob{}ref1, ref2\PYGZcb{} only (otherwise: Error message: \PYGZdq{}White space in argument\PYGZdq{})}
+
+\PYG{c}{\PYGZpc{} Doc: http://texdoc.net/natbib}
+\PYG{k}{\PYGZbs{}usepackage}[\PYG{c}{\PYGZpc{}}
+  square,        \PYG{c}{\PYGZpc{} for square brackets}
+  comma,         \PYG{c}{\PYGZpc{} use commas as separators}
+  numbers,       \PYG{c}{\PYGZpc{} for numerical citations;}
+  \PYG{c}{\PYGZpc{}sort           \PYGZpc{} orders multiple citations into the sequence in which they appear in the list of references;}
+  sort\PYG{n+nb}{\PYGZam{}}compress \PYG{c}{\PYGZpc{} as sort but in addition multiple numerical citations}
+                  \PYG{c}{\PYGZpc{} are compressed if possible (as 3\PYGZhy{}6, 15);}
+]\PYG{n+nb}{\PYGZob{}}natbib\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Same fontsize as without natbib}
+\PYG{k}{\PYGZbs{}renewcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}bibfont}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}normalfont\PYGZbs{}footnotesize}\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable hyperlinked author names in the case of \PYGZbs{}citet}
+\PYG{c}{\PYGZpc{} Source: https://tex.stackexchange.com/a/76075/9075}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}etoolbox\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}makeatletter}
+\PYG{k}{\PYGZbs{}patchcmd}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}NAT}@test\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}else} \PYG{k}{\PYGZbs{}NAT}@nm\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}else} \PYG{k}{\PYGZbs{}NAT}@hyper@\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}NAT}@nm\PYG{n+nb}{\PYGZcb{}\PYGZcb{}\PYGZob{}\PYGZcb{}\PYGZob{}\PYGZcb{}}
+\PYG{k}{\PYGZbs{}makeatother}
+\PYG{c}{\PYGZpc{} Enable nice comments}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}pdfcomment\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}commentontext}\PYG{n+nb}{\PYGZcb{}}[2]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}colorbox}\PYG{n+nb}{\PYGZob{}}yellow!60\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}pdfcomment}\PYG{n+na}{[color=\PYGZob{}0.234 0.867 0.211\PYGZcb{},hoffset=\PYGZhy{}6pt,voffset=10pt,opacity=0.5]}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}2\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}commentatside}\PYG{n+nb}{\PYGZcb{}}[1]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}pdfcomment}\PYG{n+na}{[color=\PYGZob{}0.045 0.278 0.643\PYGZcb{},icon=Note]}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Compatibality with packages todo, easy\PYGZhy{}todo, todonotes}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}todo}\PYG{n+nb}{\PYGZcb{}}[1]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}commentatside}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Compatiblity with package fixmetodonotes}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}TODO}\PYG{n+nb}{\PYGZcb{}}[1]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}commentatside}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Put footnotes below floats}
+\PYG{c}{\PYGZpc{} Source: https://tex.stackexchange.com/a/32993/9075}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}stfloats\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}fnbelowfloat}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[group\PYGZhy{}minimum\PYGZhy{}digits=4,per\PYGZhy{}mode=fraction]}\PYG{n+nb}{\PYGZob{}}siunitx\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}addto\PYGZbs{}extrasgerman}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}sisetup}\PYG{n+nb}{\PYGZob{}}locale = DE\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable that parameters of \PYGZbs{}cref\PYGZob{}\PYGZcb{}, \PYGZbs{}ref\PYGZob{}\PYGZcb{}, \PYGZbs{}cite\PYGZob{}\PYGZcb{}, ... are linked so that a reader can click on the number an jump to the target in the document}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}hyperref\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable hyperref without colors and without bookmarks}
+\PYG{k}{\PYGZbs{}hypersetup}\PYG{n+nb}{\PYGZob{}}
+  hidelinks,
+  colorlinks=true,
+  allcolors=black,
+  pdfstartview=Fit,
+  breaklinks=true
+\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable correct jumping to figures when referencing}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[all]}\PYG{n+nb}{\PYGZob{}}hypcap\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[caption=false,font=footnotesize]}\PYG{n+nb}{\PYGZob{}}subfig\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[incolumn]}\PYG{n+nb}{\PYGZob{}}mindflow\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} Extensions for references inside the document (\PYGZbs{}cref\PYGZob{}fig:sample\PYGZcb{}, ...)}
+\PYG{c}{\PYGZpc{} Enable usage \PYGZbs{}cref\PYGZob{}...\PYGZcb{} and \PYGZbs{}Cref\PYGZob{}...\PYGZcb{} instead of \PYGZbs{}ref: Type of reference included in the link}
+\PYG{c}{\PYGZpc{} That means, \PYGZdq{}Figure 5\PYGZdq{} is a full link instead of just \PYGZdq{}5\PYGZdq{}.}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[capitalise,nameinlink,noabbrev]}\PYG{n+nb}{\PYGZob{}}cleveref\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}crefname}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}\PYGZob{}}Listing\PYG{n+nb}{\PYGZcb{}\PYGZob{}}Listings\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}Crefname}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}\PYGZob{}}Listing\PYG{n+nb}{\PYGZcb{}\PYGZob{}}Listings\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Intermediate solution for hyperlinked refs. See https://tex.stackexchange.com/q/132420/9075 for more information.}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}llabel}\PYG{n+nb}{\PYGZcb{}}[1]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}label}\PYG{n+na}{[line]}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}hypertarget}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZob{}\PYGZcb{}\PYGZcb{}}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}lref}\PYG{n+nb}{\PYGZcb{}}[1]\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}hyperlink}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}FancyVerbLineautorefname}\PYGZti{}\PYG{k}{\PYGZbs{}ref*}\PYG{n+nb}{\PYGZob{}}\PYGZsh{}1\PYG{n+nb}{\PYGZcb{}\PYGZcb{}\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}lipsum\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} For demonstration purposes only}
+\PYG{c}{\PYGZpc{} These packages can be removed when all examples have been deleted}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[math]}\PYG{n+nb}{\PYGZob{}}blindtext\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}mwe\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}currfile\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}tcolorbox\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}tcbuselibrary}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}introduce \PYGZbs{}powerset \PYGZhy{} hint by http://matheplanet.com/matheplanet/nuke/html/viewtopic.php?topic=136492\PYGZam{}post\PYGZus{}id=997377}
+\PYG{k}{\PYGZbs{}DeclareFontFamily}\PYG{n+nb}{\PYGZob{}}U\PYG{n+nb}{\PYGZcb{}\PYGZob{}}MnSymbolC\PYG{n+nb}{\PYGZcb{}\PYGZob{}\PYGZcb{}}
+\PYG{k}{\PYGZbs{}DeclareSymbolFont}\PYG{n+nb}{\PYGZob{}}MnSyC\PYG{n+nb}{\PYGZcb{}\PYGZob{}}U\PYG{n+nb}{\PYGZcb{}\PYGZob{}}MnSymbolC\PYG{n+nb}{\PYGZcb{}\PYGZob{}}m\PYG{n+nb}{\PYGZcb{}\PYGZob{}}n\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}DeclareFontShape}\PYG{n+nb}{\PYGZob{}}U\PYG{n+nb}{\PYGZcb{}\PYGZob{}}MnSymbolC\PYG{n+nb}{\PYGZcb{}\PYGZob{}}m\PYG{n+nb}{\PYGZcb{}\PYGZob{}}n\PYG{n+nb}{\PYGZcb{}\PYGZob{}}
+  \PYGZlt{}\PYGZhy{}6\PYGZgt{}    MnSymbolC5
+  \PYGZlt{}6\PYGZhy{}7\PYGZgt{}   MnSymbolC6
+  \PYGZlt{}7\PYGZhy{}8\PYGZgt{}   MnSymbolC7
+  \PYGZlt{}8\PYGZhy{}9\PYGZgt{}   MnSymbolC8
+  \PYGZlt{}9\PYGZhy{}10\PYGZgt{}  MnSymbolC9
+  \PYGZlt{}10\PYGZhy{}12\PYGZgt{} MnSymbolC10
+  \PYGZlt{}12\PYGZhy{}\PYGZgt{}   MnSymbolC12\PYG{c}{\PYGZpc{}}
+\PYG{n+nb}{\PYGZcb{}\PYGZob{}\PYGZcb{}}
+\PYG{k}{\PYGZbs{}DeclareMathSymbol}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}powerset}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}mathord}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}MnSyC\PYG{n+nb}{\PYGZcb{}\PYGZob{}}180\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}usepackage}\PYG{n+nb}{\PYGZob{}}xspace\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}newcommand\PYGZob{}\PYGZbs{}eg\PYGZcb{}\PYGZob{}e.\PYGZbs{},g.\PYGZbs{}xspace\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZbs{}newcommand\PYGZob{}\PYGZbs{}ie\PYGZcb{}\PYGZob{}i.\PYGZbs{},e.\PYGZbs{}xspace\PYGZcb{}}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}eg}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}e.\PYG{k}{\PYGZbs{},}g.,\PYG{k}{\PYGZbs{} }\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}ie}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}i.\PYG{k}{\PYGZbs{},}e.,\PYG{k}{\PYGZbs{} }\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable hyphenation at other places as the dash.}
+\PYG{c}{\PYGZpc{} Example: applicaiton\PYGZbs{}hydash specific}
+\PYG{k}{\PYGZbs{}makeatletter}
+\PYG{k}{\PYGZbs{}newcommand}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}hydash}\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}penalty\PYGZbs{}@}M\PYGZhy{}\PYG{k}{\PYGZbs{}hskip\PYGZbs{}z}@skip\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} Definition of \PYGZdq{}= taken from http://mirror.ctan.org/macros/latex/contrib/babel\PYGZhy{}contrib/german/ngermanb.dtx}
+\PYG{k}{\PYGZbs{}makeatother}
+
+\PYG{c}{\PYGZpc{} correct bad hyphenation here}
+\PYG{k}{\PYGZbs{}hyphenation}\PYG{n+nb}{\PYGZob{}}op\PYGZhy{}tical net\PYGZhy{}works semi\PYGZhy{}conduc\PYGZhy{}tor\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable copy and paste of text from the PDF}
+\PYG{c}{\PYGZpc{} Only required for pdflatex. It \PYGZdq{}just works\PYGZdq{} in the case of lualatex.}
+\PYG{c}{\PYGZpc{} Alternative: cmap or mmap package}
+\PYG{c}{\PYGZpc{} mmap enables mathematical symbols, but does not work with the newtx font set}
+\PYG{c}{\PYGZpc{} See: https://tex.stackexchange.com/a/64457/9075}
+\PYG{c}{\PYGZpc{} Other solutions outlined at http://goemonx.blogspot.de/2012/01/pdflatex\PYGZhy{}ligaturen\PYGZhy{}und\PYGZhy{}copynpaste.html and http://tex.stackexchange.com/questions/4397/make\PYGZhy{}ligatures\PYGZhy{}in\PYGZhy{}linux\PYGZhy{}libertine\PYGZhy{}copyable\PYGZhy{}and\PYGZhy{}searchable}
+\PYG{c}{\PYGZpc{} Trouble shooting outlined at https://tex.stackexchange.com/a/100618/9075}
+\PYG{c}{\PYGZpc{}}
+\PYG{c}{\PYGZpc{} According to https://tex.stackexchange.com/q/451235/9075 this is the way to go}
+\PYG{k}{\PYGZbs{}input} glyphtounicode
+\PYG{k}{\PYGZbs{}pdfgentounicode}=1
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}document\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} Enable following command if you need to typeset \PYGZdq{}IEEEpubid\PYGZdq{}.}
+\PYG{c}{\PYGZpc{} See https://bytefreaks.net/tag/ieeeoverridecommandlockouts for details.}
+\PYG{c}{\PYGZpc{}\PYGZbs{}IEEEoverridecommandlockouts}
+
+\PYG{k}{\PYGZbs{}title}\PYG{n+nb}{\PYGZob{}}Quick start for LaTeXing with IEEEtran.cls for\PYG{k}{\PYGZbs{}\PYGZbs{}} IEEE Computer Society Conferences\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}author}\PYG{n+nb}{\PYGZob{}}\PYG{c}{\PYGZpc{}}
+  \PYG{k}{\PYGZbs{}IEEEauthorblockN}\PYG{n+nb}{\PYGZob{}}First Author, Second Author\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}IEEEauthorblockA}\PYG{n+nb}{\PYGZob{}}University of Examples, Germany\PYG{k}{\PYGZbs{}\PYGZbs{}}
+    \PYG{k}{\PYGZbs{}\PYGZob{}}lastname\PYG{k}{\PYGZbs{}\PYGZcb{}}@example.org\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}and}
+  \PYG{k}{\PYGZbs{}IEEEauthorblockN}\PYG{n+nb}{\PYGZob{}}Third Author\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}IEEEauthorblockA}\PYG{n+nb}{\PYGZob{}}School of Electrical and\PYG{k}{\PYGZbs{}\PYGZbs{}}Computer Examples\PYG{k}{\PYGZbs{}\PYGZbs{}}
+    Georgia Institute of Examples\PYG{k}{\PYGZbs{}\PYGZbs{}}
+    Atlanta, Georgia 30332\PYGZhy{}\PYGZhy{}0250\PYG{k}{\PYGZbs{}\PYGZbs{}}
+    \PYG{k}{\PYGZbs{}url}\PYG{n+nb}{\PYGZob{}}http://www.example.org\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} use for special paper notices}
+\PYG{c}{\PYGZpc{}\PYGZbs{}IEEEspecialpapernotice\PYGZob{}(Invited Paper)\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} make the title area}
+\PYG{k}{\PYGZbs{}maketitle}
+
+\PYG{c}{\PYGZpc{} In case you want to add a copyright statement.}
+\PYG{c}{\PYGZpc{} Works only in the compsoc conference mode.}
+\PYG{c}{\PYGZpc{}}
+\PYG{c}{\PYGZpc{} Source: https://tex.stackexchange.com/a/325013/9075}
+\PYG{c}{\PYGZpc{}}
+\PYG{c}{\PYGZpc{} All possible solutions:}
+\PYG{c}{\PYGZpc{}  \PYGZhy{} https://tex.stackexchange.com/a/325013/9075}
+\PYG{c}{\PYGZpc{}  \PYGZhy{} https://tex.stackexchange.com/a/279134/9075}
+\PYG{c}{\PYGZpc{}  \PYGZhy{} https://tex.stackexchange.com/q/279789/9075 (TikZ)}
+\PYG{c}{\PYGZpc{}  \PYGZhy{} https://tex.stackexchange.com/a/200330/9075 \PYGZhy{} for non\PYGZhy{}compsocc papers}
+\PYG{k}{\PYGZbs{}iffalse}
+  \PYG{k}{\PYGZbs{}IEEEoverridecommandlockouts}
+  \PYG{k}{\PYGZbs{}IEEEpubid}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}minipage\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}textwidth}\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{} \PYGZbs{}\PYGZbs{}}\PYG{n+na}{[12pt]} \PYG{k}{\PYGZbs{}centering}
+      1551\PYGZhy{}3203 \PYG{k}{\PYGZbs{}copyright} 2015 IEEE.
+      Personal use is permitted, but republication/redistribution requires IEEE permission.
+      \PYG{k}{\PYGZbs{}\PYGZbs{}}
+      See \PYG{k}{\PYGZbs{}url}\PYG{n+nb}{\PYGZob{}}https://www.ieee.org/publications\PYG{n+nb}{\PYGZus{}}standards/publications/rights/index.html\PYG{n+nb}{\PYGZcb{}} for more information.
+    \PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}minipage\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+\PYG{k}{\PYGZbs{}fi}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}abstract\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Write an abstract for your work. Replace each of the points below with one sentence (two if you must) and you have your abstract. Write it when you finished your entire report.\PYG{k}{\PYGZbs{}footnote}\PYG{n+nb}{\PYGZob{}}https://www.easterbrook.ca/steve/2010/01/how\PYGZhy{}to\PYGZhy{}write\PYGZhy{}a\PYGZhy{}scientific\PYGZhy{}abstract\PYGZhy{}in\PYGZhy{}six\PYGZhy{}easy\PYGZhy{}steps/\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Introduction.\PYG{n+nb}{\PYGZcb{}} In one sentence, what’s the topic? Phrase it in a way that your reader will understand. If you’re writing a PhD thesis, your readers are the examiners – assume they are familiar with the general field of research, so you need to tell them specifically what topic your thesis addresses. Same advice works for scientific papers – the readers are the peer reviewers, and eventually others in your field interested in your research, so again they know the background work, but want to know specifically what topic your paper covers.
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}State the problem you tackle.\PYG{n+nb}{\PYGZcb{}} What’s the key research question? Again, in one sentence. (Note: For a more general essay, I’d adjust this slightly to state the central question that you want to address) Remember, your first sentence introduced the overall topic, so now you can build on that, and focus on one key question within that topic. If you can’t summarize your thesis/paper/essay in one key question, then you don’t yet understand what you’re trying to write about. Keep working at this step until you have a single, concise (and understandable) question.
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Summarize (in one sentence) why nobody else has adequately answered the research question yet.\PYG{n+nb}{\PYGZcb{}} For a PhD thesis, you’ll have an entire chapter, covering what’s been done previously in the literature. Here you have to boil that down to one sentence. But remember, the trick is not to try and cover all the various ways in which people have tried and failed; the trick is to explain that there’s this one particular approach that nobody else tried yet (hint: it’s the thing that your research does). But here you’re phrasing it in such a way that it’s clear it’s a gap in the literature. So use a phrase such as “previous work has failed to address…”. (if you’re writing a more general essay, you still need to summarize the source material you’re drawing on, so you can pull the same trick – explain in a few words what the general message in the source material is, but expressed in terms of what’s missing)
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Explain, in one sentence, how you tackled the research question.\PYG{n+nb}{\PYGZcb{}} What’s your big new idea? (Again for a more general essay, you might want to adapt this slightly: what’s the new perspective you have adopted? or: What’s your overall view on the question you introduced in step 2?)
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}In one sentence, how did you go about doing the research that follows from your big idea.\PYG{n+nb}{\PYGZcb{}} Did you run experiments? Build a piece of software? Carry out case studies? This is likely to be the longest sentence, especially if it’s a PhD thesis – after all you’re probably covering several years worth of research. But don’t overdo it – we’re still looking for a sentence that you could read aloud without having to stop for breath. Remember, the word ‘abstract’ means a summary of the main ideas with most of the detail left out. So feel free to omit detail! (For those of you who got this far and are still insisting on writing an essay rather than signing up for a PhD, this sentence is really an elaboration of sentence 4 – explore the consequences of your new perspective).
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}As a single sentence, what’s the key impact of your research? Here we’re not looking for the outcome of an experiment.\PYG{n+nb}{\PYGZcb{}} We’re looking for a summary of the implications. What’s it all mean? Why should other people care? What can they do with your research. (Essay folks: all the same questions apply: what conclusions did you draw, and why would anyone care about them?)
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}abstract\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} For peer review papers, you can put extra information on the cover}
+\PYG{c}{\PYGZpc{} page as needed:}
+\PYG{c}{\PYGZpc{} \PYGZbs{}ifCLASSOPTIONpeerreview}
+\PYG{c}{\PYGZpc{} \PYGZbs{}begin\PYGZob{}center\PYGZcb{} \PYGZbs{}bfseries EDICS Category: 3\PYGZhy{}BBND \PYGZbs{}end\PYGZob{}center\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZbs{}fi}
+\PYG{c}{\PYGZpc{}}
+\PYG{c}{\PYGZpc{} For peerreview papers, this IEEEtran command inserts a page break and}
+\PYG{c}{\PYGZpc{} creates the second title. It will be ignored for other modes.}
+\PYG{k}{\PYGZbs{}IEEEpeerreviewmaketitle}
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}Introduction\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:introduction\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope of your entire report\PYG{n+nb}{\PYGZcb{}}. The purpose of your entire report is to make a \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}scientific argument using the scientific method\PYG{n+nb}{\PYGZcb{}}. A scientific argument always has the following steps that all must come in this order.
+\PYG{c}{\PYGZpc{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}item}\PYG{n+na}{[SM1]} \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Explicate the assumptions and state of the art\PYG{n+nb}{\PYGZcb{}} on which you are going to conduct your research to investigate your research problem/test the hypothesis.
+    \PYG{k}{\PYGZbs{}item}\PYG{n+na}{[SM2]} Clearly and precisely \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}formulate a research problem or hypothesis\PYG{n+nb}{\PYGZcb{}}.
+    \PYG{k}{\PYGZbs{}item}\PYG{n+na}{[SM3]} \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Describe the (research) method\PYG{n+nb}{\PYGZcb{}} that you followed to investigate the problem / to test the hypothesis in a way that \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}allows someone else to reproduce your steps\PYG{n+nb}{\PYGZcb{}}. The method must includes steps and criteria for evaluating whether you answered your question successfully or not.
+    \PYG{k}{\PYGZbs{}item}\PYG{n+na}{[SM4]} \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Provide execution details\PYG{n+nb}{\PYGZcb{}} on how you followed the method in the given, specific situation.
+    \PYG{k}{\PYGZbs{}item}\PYG{n+na}{[SM5]} \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Report your results\PYG{n+nb}{\PYGZcb{}} by describing and summarizing your measurements. You must not interpret your results.
+    \PYG{k}{\PYGZbs{}item}\PYG{n+na}{[SM6]} \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Now interpret your results\PYG{n+nb}{\PYGZcb{}} by contextualizing the measurements and drawing conclusion that lead to answering your research problem or defining further follow\PYGZhy{}up research problems.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}}
+This template will mark various parts of the structure with SM1\PYGZhy{}SM6 to recall to you which step of a scientific argument is used and where.
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope of \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}. The introduction chapter is a summary of your work and your scientific argument that shall be understandable to anyone in your scientific field, e.g., anyone in Data Science. A reader must be able to comprehend the problem, method, relevant execution details, results, and their interpretation by reading the introduction and the introduction alone. Section\PYGZti{}\PYG{k}{\PYGZbs{}ref}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}} introduces the general topic of your research. Section\PYGZti{}\PYG{k}{\PYGZbs{}ref}\PYG{n+nb}{\PYGZob{}}sec:introduction:state\PYGZhy{}of\PYGZhy{}art\PYG{n+nb}{\PYGZcb{}} discusses the state of the art and identifies a research. Section\PYGZti{}\PYG{k}{\PYGZbs{}ref}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}} then states the research problem to investigate. Section\PYGZti{}\PYG{k}{\PYGZbs{}ref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:research\PYGZhy{}method\PYG{n+nb}{\PYGZcb{}} explains the research method that was followed, possibly with execution details. Section\PYGZti{}\PYG{k}{\PYGZbs{}ref}\PYG{n+nb}{\PYGZob{}}sec:introduction:results\PYG{n+nb}{\PYGZcb{}} then presents the results and their interpretation. Only if a reader thinks they are not convinced or they need more details to reproduce your study, they shall have to read further. The individual chapters and sections provide the details for each of the steps in your scientific argument.
+
+You usually write the introduction chapter \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}after\PYG{n+nb}{\PYGZcb{}} you wrote all other chapters, but you should keep on making notes for each of the sections as you write the later chapters..
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope of the introduction paragraph to a chapter\PYG{n+nb}{\PYGZcb{}}. The paragraph you are reading above is a typical introductory paragraph to a chapter. It is a high\PYGZhy{}level summary of the chapters\PYGZsq{} topic (SM1 and SM2). It gives the reader some guidance by breaking down the chapter topic into subtopics that are clearly named (SM3) in the right order with forward references to the corresponding sections (SM4). It may close with announcing the result you obtain (SM6) but this is usually not done in the opening paragraph of the introduction.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Context and Topic (SM1)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. You begin with providing the general scientific audience an introduction into the specific topic of your work. The aim of this section is to first introduce the \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}general subject of study\PYG{n+nb}{\PYGZcb{}} (``Giraffes are well\PYGZhy{}known animals and everyone\PYGZsq{}s favorite\PYGZsq{}\PYGZsq{}), the \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}specific topic of societal or scientific interest\PYG{n+nb}{\PYGZcb{}} to investigate (``Giraffes have blue tongues\PYGZsq{}\PYGZsq{}) and the \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}objective of society/science towards\PYG{n+nb}{\PYGZcb{}} this topic (``it is unknown at the moment how the blue color tone evolved\PYGZsq{}\PYGZsq{}).
+It must be understandable by the general scientific public. Every \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}term\PYG{n+nb}{\PYGZcb{}} with a specific meaning must be highlighted and introduced in precise language/concepts that only builds on a general scientific background.
+
+At the end of this section, you have explained and established a general goal that society/science universally agrees to be worth achieving (``knowing how everyone\PYGZsq{}s favorite animal evolved the colour of their tongue\PYGZsq{}\PYGZsq{}).
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}State of the Art (SM1)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:introduction:state\PYGZhy{}of\PYGZhy{}art\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. You provide a more in\PYGZhy{}depth introduction into the research topic by contrasting the current state of the art in society/science in relation to the research topic you introduced in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}}. This introduction has to
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}item} present established facts, methods, and results that provide a deeper understanding of the research topic (``prior work on giraffe genomes, relevance of giraffes for societal well\PYGZhy{}being, giraffes being a model\PYGZhy{}animal for various other studies, etc.\PYGZsq{}\PYGZsq{})
+    \PYG{k}{\PYGZbs{}item} discuss in which ways prior and recent ideas still fall short of reaching the general goal you explained in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}} (``prior work only sequenced the genome of one giraffe and did not consider genes of ancient ancestors\PYGZsq{}\PYGZsq{})
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+
+You have to provide citations/literature references for each of the statements and claims you are making. This section is usually a summary of the related work discussion in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:background\PYG{n+nb}{\PYGZcb{}}.
+
+At the end of this section, you have established a \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}knowledge gap\PYG{n+nb}{\PYGZcb{}} between the state of the art and the general objective you developed in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}}. \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Stating a (knowledge) gap between a status quo and a desired situation is the \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}first step\PYG{n+nb}{\PYGZcb{}} of a writing scientific argument.\PYG{n+nb}{\PYGZcb{}}
+
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Research Question (SM2)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. In this section you state in which way you will address the knowledge gap you identified at the end of \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:state\PYGZhy{}of\PYGZhy{}art\PYG{n+nb}{\PYGZcb{}}. You usually cannot address and resolve the entire knowledge gap in your work. The purpose of this section is to clearly detail the specific part of the knowledge that you will address. You thereby make all the assumptions explicit that underlie your work (``in this report we focus on genomes of female giraffes who lived in the years 1950\PYGZhy{}2000 in South Africa\PYGZsq{}\PYGZsq{}).
+
+Your general research question states
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}item} The starting point/assumptions you are making from which your research starts (``for the given 13 genomes of female giraffes...\PYGZsq{}\PYGZsq{}), and
+    \PYG{k}{\PYGZbs{}item} the final objective/solution you want to reach (``...identify the genes involved in color expression of giraffe tongues...\PYGZsq{}\PYGZsq{})
+    \PYG{k}{\PYGZbs{}item} and the evaluation criteria that will determine whether you are successful (``...that are present in at least 75\PYG{k}{\PYGZbs{}\PYGZpc{}} of the studied giraffes\PYGZsq{}\PYGZsq{})
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+
+You will usually break your general research question down into sub\PYGZhy{}research questions. You may do this here. The sub\PYGZhy{}research questions have to form a chain that take you in smaller steps from the starting point/assumptions of your general research question to your final objective and evaluation.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Method or Approach (SM3, SM4)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:introduction:method\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. In this section you outline the method that you applied to answer the research questions, or the new technical approach that you developed to answer it. It is a summary of the steps that someone else has to take in order to reproduce your steps. Mention here the data sets you had to obtain/gather/analyze, interviews with stakeholders you had to make to further develop the research questions, technical artifacts (programs, algorithms, models) you could apply or that you had to develop (and how they work).
+
+The section is most readable if you give each of the steps in your method its own paragraph. In each paragraph you first briefly explain the concept of the step in your method (SM3, ``we explored the data through visual analytics\PYGZsq{}\PYGZsq{}) and then provide details in execution (SM4, ``we used tool X, we developed dashboard Y\PYGZsq{}\PYGZsq{}) include a forward reference to the respective chapter that provides more details.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Findings (SM5, SM6)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:introduction:results\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. You close the introduction by clearly stating the evaluation setup you designed to evaluate the success of your study regarding the research objective, which comes in two steps. It is most likely a summary of your evaluation in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:evaluation\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{k}{\PYGZbs{}subsection*}\PYG{n+nb}{\PYGZob{}}Results (SM5)\PYG{n+nb}{\PYGZcb{}}
+
+You state the evaluation method that is in line with your research question from \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}} and summarize the measurements you obtained but you do not interpret them, i.e., you only report the numbers but you do not include judging statements.
+
+\PYG{k}{\PYGZbs{}subsection*}\PYG{n+nb}{\PYGZob{}}Interpretation (SM6)\PYG{n+nb}{\PYGZcb{}}
+
+You summarize your interpretation of the results and draw conclusions. State whether and to which degree the research question from \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}} has been answered successfully or not.
+
+Finally state briefly how much closer society and science have come in answering the general objective you outlined in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}Background (SM1)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:background\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. The background chapter has multiple roles.
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+
+    \PYG{k}{\PYGZbs{}item} \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Preliminaries.\PYG{n+nb}{\PYGZcb{}} It has to provide all (and exactly the) information that is necessary to understand the methodological and technical parts of your work in the specific area of study. Assume as starting point another student in your degree who did not study the specific subject you are studying but has the task to understand your work. Which concepts, terms, definitions, etc. does the student have to know? Which formulas, symbols, etc. are standard in this topic? Only introduce definitions if you actually need them in any of the subsequent chapters.
+
+    \PYG{k}{\PYGZbs{}item} \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Related Work.\PYG{n+nb}{\PYGZcb{}} It has to provide a comprehensive discussion of all prior work in the area on this subject. Your discussion has to summarize these prior works and has to explain in which way the research question you are solving (\PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}}) has not bee solved yet because prior work had more limiting assumptions, addressed a different angle, their results are not complete etc. Depending on the subject you are studying, the related work part can be larger and warrant an entire chapter on its own, or be fully concluded within \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:state\PYGZhy{}of\PYGZhy{}art\PYG{n+nb}{\PYGZcb{}}.
+
+    You can close the related work discussion by clarifying the positioning and formulation of your research question (SM2) in relation to all the prior work, making more explicit whether you address an existing research question under different premises or whether you work on a modified or completely new research question.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}Problem Exposition (optional)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. Introduce the problem context in more detail if \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}} does not provide all necessary information about the problem to follow the rest of the report. This can include further details on the data you studied, context assumptions and requirements, etc.
+
+If you have to expose the problem in more detail here, then this chapter should also provide a more detailed explanation of research question and the method you are applying, i.e., you can now provide more concrete sub\PYGZhy{}problems compared to \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}} more details for the method \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:method\PYG{n+nb}{\PYGZcb{}} because you now have explained the problem much better. A typical structure can be.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Context/Business Understanding (SM1)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:context\PYGZhy{}understanding\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+provide details
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Data Understanding (SM1)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:data\PYGZhy{}understanding\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+provide details
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Detailed Research Questions (SM2)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:research\PYGZhy{}problems\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+provide details based on \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:context\PYGZhy{}understanding\PYG{n+nb}{\PYGZcb{}} and \PYG{k}{\PYGZbs{}ref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:data\PYGZhy{}understanding\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Detailed Method (SM3)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:research\PYGZhy{}method\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+provide details based on \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:context\PYGZhy{}understanding\PYG{n+nb}{\PYGZcb{}} and \PYG{k}{\PYGZbs{}ref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:data\PYGZhy{}understanding\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}First Real Chapter addressing first Research Problem\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem1\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. After you stated research context (SM1), research problem (SM2), and research method (SM3) in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction\PYG{n+nb}{\PYGZcb{}} and possibly \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition\PYG{n+nb}{\PYGZcb{}}, the remainder of your entire report addresses execution (SM4), results (SM5), and interpretation (SM6). You usually do this by addressing various sub\PYGZhy{}problems again through scientific arguments following the 6 steps SM1\PYGZhy{}SM6.
+
+Have a short chapter introduction that recalls and explains the first research problem of your thesis. The problem has to show up in the introduction in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}} or in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:research\PYGZhy{}problems\PYG{n+nb}{\PYGZcb{}} already. This provides the background (SM1) for this chapter while the first research problem of the thesis becomes the research question/hypothesis (SM2) for this chapter.
+
+Next, explain in the chapter intro how you solve the research problem in this chapter by breaking it down in further sub\PYGZhy{}problems. By this, you outline the method (SM3) through which you are going to solve the problem of this chapter. This is necessary to give the reader guidance of what\PYGZsq{}s to come in this chapter and how it fits into the thesis as a whole. Explain that you will address the first sub\PYGZhy{}problem in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem1:subproblem1\PYG{n+nb}{\PYGZcb{}} and the second sub\PYGZhy{}problem in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem1:subproblem2\PYG{n+nb}{\PYGZcb{}}, etc. The sections then provide the details for execution and results.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}First Sub\PYGZhy{}Problem\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem1:subproblem1\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}The first paragraph describes the first sub\PYGZhy{}problem and develops the requirements a solution has to satisfy (SM2 for this section).\PYG{n+nb}{\PYGZcb{}} The requirements have to be based on the knowledge and reasoning developing in the preceding chapters and sections. Try to use an example to illustrate the problem and the desired properties of the solution. Check that every term/concept you use here has already been defined already in a previous section. If you cannot describe your problem without defining new terms, you may have to add another section before this one that develops the terms and concepts you need to explain the problem.
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}The second paragraph describes the method/approach how you address the problem (SM3 for this section).\PYG{n+nb}{\PYGZcb{}} Describe the method in a level of detail that allows another student to reproduce your steps.
+Make use of appendices \PYG{c}{\PYGZpc{} (see \PYGZbs{}cref\PYGZob{}sec:appendix1\PYGZcb{})}
+if certain details take too much space.
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}The third, fourth, and following paragraph provides details on applying the method or developing a new approach, i.e., execution (SM4) and may explain results (SM5)\PYG{n+nb}{\PYGZcb{}}, i.e. details on the steps needed to reproduce the results.
+
+Results (SM5) can come in many forms, e.g., conceptual diagrams, algorithms, tables, charts, a list of articles from a literature research etc. You must reference them (``\PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}fig:my\PYG{n+nb}{\PYGZus{}}label\PYG{n+nb}{\PYGZcb{}} shows...\PYGZsq{}\PYGZsq{}) and describe the results in text. If you use diagrams, tables, or charts, you cannot expect the reader to know what to you expect them to see in a diagram, table or chart. Describe to them how to read these, explain the meaning of particular elements, point out special observations. But you may only describe the results you must not interpret them. Make use of appendices if certain details take too much space.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}centering}
+    \PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{}\PYGZbs{}includegraphics\PYGZob{}/path/to/figure.pdf\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}A scientific figure that has to be explained in the text\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:my\PYG{n+nb}{\PYGZus{}}label\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}After describing the results, you may interpret them (SM6).\PYG{n+nb}{\PYGZcb{}} Here you can infer what a particular observation means (for you), how it can be applied, or what others can do with it. You must not write interpretations before completely describing your results. This is a common mistake done by most beginner writers. You want to quickly get to the point, which is the final finding or interpretation. But you forget that your reader does not understand yet what you are interpreting \PYGZhy{} they do not know yet what you do know. An interpretation can only be followed after all results have been described. The interpretation must be based on the written description only. Then you can be sure that your readers can follow your interpretation and reach the same conclusions as you have.
+
+Ideally, your interpretation leads to the next sub\PYGZhy{}problem in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem1:subproblem2\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Second Sub\PYGZhy{}Problem\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:problem1:subproblem2\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+You now build on the solution to the first sub\PYGZhy{}problem of \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem1:subproblem1\PYG{n+nb}{\PYGZcb{}} (SM1) and recall second sub\PYGZhy{}problem (SM2, you detailed in the introduction of this chapter) and follow the same pattern as before (SM3\PYGZhy{}SM6).
+
+Note that not all sections may not include all parts SM1\PYGZhy{}SM6 in all detail. Some sections do not require to repeatedly state the background (SM1) or the research problem (SM2) if they were already clearly defined in a previous section. Sometimes, a section is only dedicated to describing the method (SM3) and execution (SM4) and does not contain any results or interpretations. Sometimes results (SM5) and interpretations (SM6) only come in the evaluation chapter.
+
+What is important for you when you are writing a scientific argument is not to slavishly have SM1\PYGZhy{}SM6 in each section explicitly, but that you are always fully aware of the following:
+\PYG{c}{\PYGZpc{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}item} Which step of a scientific argument am I currently writing (SM1, SM2, ..., SM6)?
+    \PYG{k}{\PYGZbs{}item} Does the step that I am writing come in the right order, i.e., if you are writing about execution (SM4, e.g., details of building a model), is there a preceding paragraph or section that describes the method (SM3) and is that one preceded by a clear statement of the (sub\PYGZhy{})problem addressed (SM2)?
+    \PYG{k}{\PYGZbs{}item} Are you really \PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}not\PYG{n+nb}{\PYGZcb{}} writing interpretation SM6 before SM5, SM4, or SM3?
+    \PYG{k}{\PYGZbs{}item} Is it clear to the reader which part of the scientific argument you are currently making?
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}Second Real Chapter\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:sub\PYGZhy{}problem2\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+Have a short chapter introduction that recalls what you already achieved in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem1\PYG{n+nb}{\PYGZcb{}} and explain the second research problem of your thesis. The problem has to show up in the introduction in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:research\PYGZhy{}question\PYG{n+nb}{\PYGZcb{}} or in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:problem\PYGZhy{}exposition:research\PYGZhy{}problems\PYG{n+nb}{\PYGZcb{}} already. etc.
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}Evaluation\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:evaluation\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+\PYG{k}{\PYGZbs{}emph}\PYG{n+nb}{\PYGZob{}}Purpose and scope\PYG{n+nb}{\PYGZcb{}}. The evaluation chapter should be the most formal and rigorously structured chapter of your thesis as the validity of your evaluation argument depends on it.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Objective (SM2)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:evaluation:objective\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+Clearly state what you want to evaluate and what you want to measure.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Setup (SM3)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:evaluation:setup\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+State which data, participants, tools, etc. you chose and why. Clearly state how you measure outcomes and how you compare them to baselines, reference groups, etc.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Execution (SM4)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:evaluation:execution\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+Provide all details on the execution that are necessary to allows another person to reproduce your results at a later point.
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Results (SM5)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:evaluation:results\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+You only report the measurements. You must present and reference them (``\PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}fig:my\PYG{n+nb}{\PYGZus{}}label2\PYG{n+nb}{\PYGZcb{}} shows...\PYGZsq{}\PYGZsq{}) and describe the results in text. If you use diagrams, tables, or charts, you cannot expect the reader to know what to you expect them to see in a diagram, table or chart. Describe to them how to read these, explain the meaning of particular elements, point out special observations. But you may only describe the results you must not interpret them. Make use of appendices if certain details take too much space.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}centering}
+    \PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{}\PYGZbs{}includegraphics\PYGZob{}/path/to/figure.pdf\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Another scientific figure that has to be explained in the text\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:my\PYG{n+nb}{\PYGZus{}}label2\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Discussion (SM6)\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:evaluation:discussion\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+
+An interpretation can only be followed after all results have been described. The interpretation must be based on the written description in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:evaluation:results\PYG{n+nb}{\PYGZcb{}} only. Then you can be sure that your readers can follow your interpretation and reach the same conclusions as you have.
+
+
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}LaTeX Hints\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}chap:latexhints\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Required for proper example rendering in the compiled PDF}
+\PYG{k}{\PYGZbs{}newcount\PYGZbs{}LTGbeginlineexample}
+\PYG{k}{\PYGZbs{}newcount\PYGZbs{}LTGendlineexample}
+\PYG{k}{\PYGZbs{}newenvironment}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}\PYG{c}{\PYGZpc{}}
+\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}LTGbeginlineexample}=\PYG{k}{\PYGZbs{}numexpr\PYGZbs{}inputlineno}+1\PYG{k}{\PYGZbs{}relax}\PYG{n+nb}{\PYGZcb{}}\PYG{c}{\PYGZpc{}}
+\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}LTGendlineexample}=\PYG{k}{\PYGZbs{}numexpr\PYGZbs{}inputlineno}\PYGZhy{}1\PYG{k}{\PYGZbs{}relax}\PYG{c}{\PYGZpc{}}
+\PYG{c}{\PYGZpc{}}
+\PYG{k}{\PYGZbs{}tcbinputlisting}\PYG{n+nb}{\PYGZob{}}\PYG{c}{\PYGZpc{}}
+  listing only,
+  listing file=\PYG{k}{\PYGZbs{}currfilepath},
+  colback=green!5!white,
+  colframe=green!25,
+  coltitle=black!90,
+  coltext=black!90,
+  left=8mm,
+  title=Corresponding \PYG{k}{\PYGZbs{}LaTeX}\PYG{n+nb}{\PYGZob{}\PYGZcb{}} code of \PYG{k}{\PYGZbs{}texttt}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}currfilepath}\PYG{n+nb}{\PYGZcb{}},
+    minted language=TeX,
+    minted style=vs,
+    minted options=\PYG{n+nb}{\PYGZob{}}
+      fontsize=\PYG{k}{\PYGZbs{}footnotesize},
+      firstline=\PYG{k}{\PYGZbs{}the\PYGZbs{}LTGbeginlineexample},
+      lastline=\PYG{k}{\PYGZbs{}the\PYGZbs{}LTGendlineexample},
+      firstnumber=\PYG{k}{\PYGZbs{}the\PYGZbs{}LTGbeginlineexample},
+      breaklines,
+      linenos,
+      numbersep=8pt
+    \PYG{n+nb}{\PYGZcb{}}
+\PYG{n+nb}{\PYGZcb{}}
+\PYG{n+nb}{\PYGZcb{}}\PYG{c}{\PYGZpc{}}
+
+This section contains hints on writing LaTeX.
+It focuses on minimal examples, which can be directly adapted to the content
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Handling of paragraphs\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+One sentence per line.
+This rule is important for the usage of version control systems.
+A new line is generated with a blank line.
+As you would do in Word:
+New paragraphs are generated by pressing enter.
+In LaTeX, this does not lead to a new paragraph as LaTeX joins subsequent lines.
+In case you want a new paragraph, just press enter twice (!).
+This leads to an empty line.
+In word, there is the functionality to press shift and enter.
+This leads to a hard line break.
+The text starts at the beginning of a new line.
+In LaTeX, you can do that by using two backslashes (\PYG{k}{\PYGZbs{}textbackslash\PYGZbs{}textbackslash}).\PYG{k}{\PYGZbs{}\PYGZbs{}}
+This is rarely used.
+
+Please do \PYG{k}{\PYGZbs{}textit}\PYG{n+nb}{\PYGZob{}}not\PYG{n+nb}{\PYGZcb{}} use two backslashes for new paragraphs.
+For instance, this sentence belongs to the same paragraph, whereas the last one started a new one.
+A long motivation for that is provided at \PYG{k}{\PYGZbs{}url}\PYG{n+nb}{\PYGZob{}}http://loopspace.mathforge.org/HowDidIDoThat/TeX/VCS/\PYGZsh{}section.3\PYG{n+nb}{\PYGZcb{}}.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Notes separated from the text\PYG{n+nb}{\PYGZcb{}}
+
+The package mindflow enables writing down notes and annotations in a way so that they are separated from the main text.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}mindflow\PYG{n+nb}{\PYGZcb{}}
+This is a small note.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}mindflow\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Hyphenation\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}LaTeX}\PYG{n+nb}{\PYGZob{}\PYGZcb{}} automatically hyphenates words.
+When using microtype, there should be less hypnetations than in other settings.
+It might be necessary to tweak the hyphenations nevertheless.
+Here are some hints:
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+In case you write \PYG{k}{\PYGZbs{}enquote}\PYG{n+nb}{\PYGZob{}}application\PYGZhy{}specific\PYG{n+nb}{\PYGZcb{}}, then the word will only be hyphenated at the dash.
+You can also write \PYG{k}{\PYGZbs{}verb}1applica\PYG{k}{\PYGZbs{}allowbreak}\PYG{n+nb}{\PYGZob{}\PYGZcb{}}tion\PYGZhy{}specific1 (result: applica\PYG{k}{\PYGZbs{}allowbreak}\PYG{n+nb}{\PYGZob{}\PYGZcb{}}tion\PYGZhy{}specific), but this is much more effort.
+
+You can now write words containing hyphens which are hyphenated at other places in the word.
+For instance, \PYG{k}{\PYGZbs{}verb}1application\PYGZdq{}=specific1 gets application\PYGZdq{}=specific.
+This is enabled by an additional configuration of the babel package.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Typesetting Units\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+Numbers can written plain text (such as 100), by using the siunitx package like that:
+\PYG{k}{\PYGZbs{}SI}\PYG{n+nb}{\PYGZob{}}100\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}km\PYGZbs{}per\PYGZbs{}hour}\PYG{n+nb}{\PYGZcb{}},
+or by using plain \PYG{k}{\PYGZbs{}LaTeX}\PYG{n+nb}{\PYGZob{}\PYGZcb{}} (and math mode):
+\PYG{l+s}{\PYGZdl{}}\PYG{l+m}{100}\PYG{n+nb}{ }\PYG{n+nv}{\PYGZbs{}frac}\PYG{n+nb}{\PYGZob{}}\PYG{n+nv}{\PYGZbs{}mathit}\PYG{n+nb}{\PYGZob{}km\PYGZcb{}\PYGZcb{}\PYGZob{}h\PYGZcb{}}\PYG{l+s}{\PYGZdl{}}.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}SI}\PYG{n+nb}{\PYGZob{}}5\PYG{n+nb}{\PYGZcb{}\PYGZob{}}\PYG{k}{\PYGZbs{}percent}\PYG{n+nb}{\PYGZcb{}} of \PYG{k}{\PYGZbs{}SI}\PYG{n+nb}{\PYGZob{}}10\PYG{n+nb}{\PYGZcb{}\PYGZob{}}kg\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+Numbers are automatically grouped: \PYG{k}{\PYGZbs{}num}\PYG{n+nb}{\PYGZob{}}123456\PYG{n+nb}{\PYGZcb{}}.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Surrounding Text by Quotes\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+Please use the \PYG{k}{\PYGZbs{}enquote}\PYG{n+nb}{\PYGZob{}}enquote command\PYG{n+nb}{\PYGZcb{}} to quote something.
+Quoting with \PYGZdq{}`quote\PYGZdq{}\PYGZsq{} or ``quote\PYGZsq{}\PYGZsq{} also works.
+
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Cleveref examples\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:ex:cref\PYG{n+nb}{\PYGZcb{}}
+
+Cleveref demonstration: Cref at beginning of sentence, cref in all other cases.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}centering}
+    \PYG{k}{\PYGZbs{}includegraphics}\PYG{n+na}{[width=.75\PYGZbs{}columnwidth]}\PYG{n+nb}{\PYGZob{}}example\PYGZhy{}image\PYGZhy{}a\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Example figure for cref demo\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:ex:cref\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}centering}
+    \PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}tabular\PYG{n+nb}{\PYGZcb{}\PYGZob{}}ll\PYG{n+nb}{\PYGZcb{}}
+      \PYG{k}{\PYGZbs{}toprule}
+      Heading1 \PYG{n+nb}{\PYGZam{}} Heading2 \PYG{k}{\PYGZbs{}\PYGZbs{}}
+      \PYG{k}{\PYGZbs{}midrule}
+      One      \PYG{n+nb}{\PYGZam{}} Two      \PYG{k}{\PYGZbs{}\PYGZbs{}}
+      Thee     \PYG{n+nb}{\PYGZam{}} Four     \PYG{k}{\PYGZbs{}\PYGZbs{}}
+      \PYG{k}{\PYGZbs{}bottomrule}
+    \PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}tabular\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Example table for cref demo\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}tab:ex:cref\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}Cref}\PYG{n+nb}{\PYGZob{}}fig:ex:cref\PYG{n+nb}{\PYGZcb{}} shows a simple fact, although \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}fig:ex:cref\PYG{n+nb}{\PYGZcb{}} could also show something else.
+
+\PYG{k}{\PYGZbs{}Cref}\PYG{n+nb}{\PYGZob{}}tab:ex:cref\PYG{n+nb}{\PYGZcb{}} shows a simple fact, although \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}tab:ex:cref\PYG{n+nb}{\PYGZcb{}} could also show something else.
+
+\PYG{k}{\PYGZbs{}Cref}\PYG{n+nb}{\PYGZob{}}sec:ex:cref\PYG{n+nb}{\PYGZcb{}} shows a simple fact, although \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:ex:cref\PYG{n+nb}{\PYGZcb{}} could also show something else.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Figures\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}Cref}\PYG{n+nb}{\PYGZob{}}fig:label\PYG{n+nb}{\PYGZcb{}} shows something interesting.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}centering}
+  \PYG{k}{\PYGZbs{}includegraphics}\PYG{n+na}{[width=.8\PYGZbs{}linewidth]}\PYG{n+nb}{\PYGZob{}}example\PYGZhy{}image\PYGZhy{}golden\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+na}{[Simple Figure]}\PYG{n+nb}{\PYGZob{}}Simple Figure. Based on \PYG{k}{\PYGZbs{}citet}\PYG{n+nb}{\PYGZob{}}mwe\PYG{n+nb}{\PYGZcb{}}.\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:label\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+
+One can span a figure across mulitple columns by using \PYG{k}{\PYGZbs{}verb}+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure*\PYG{n+nb}{\PYGZcb{}}+.
+See \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}fig:16x9\PYG{n+nb}{\PYGZcb{}} as an example.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure*\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}centering}
+  \PYG{c}{\PYGZpc{} note that \PYGZbs{}textwidth is used instead of \PYGZbs{}linewidth}
+  \PYG{c}{\PYGZpc{} This ensures that the graphics width is 60\PYGZpc{} of the \PYGZdq{}page\PYGZdq{} (text block), and not just 60\PYGZpc{} of the current text column}
+  \PYG{c}{\PYGZpc{} See https://tex.stackexchange.com/a/17085/9075 for details}
+  \PYG{k}{\PYGZbs{}includegraphics}\PYG{n+na}{[width=.6\PYGZbs{}textwidth]}\PYG{n+nb}{\PYGZob{}}example\PYGZhy{}image\PYGZhy{}16x9\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}16x9 Figure\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:16x9\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure*\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Sub Figures\PYG{n+nb}{\PYGZcb{}}
+
+An example of two sub figures is shown in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}fig:two\PYG{n+nb}{\PYGZus{}}sub\PYG{n+nb}{\PYGZus{}}figures\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure*\PYG{n+nb}{\PYGZcb{}}[!b]
+    \PYG{k}{\PYGZbs{}centering}
+    \PYG{k}{\PYGZbs{}subfloat}\PYG{n+na}{[Case I]}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}includegraphics}\PYG{n+na}{[width=.4\PYGZbs{}linewidth]}\PYG{n+nb}{\PYGZob{}}example\PYGZhy{}image\PYGZhy{}a\PYG{n+nb}{\PYGZcb{}}\PYG{c}{\PYGZpc{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:first\PYG{n+nb}{\PYGZus{}}case\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}hfil}
+    \PYG{k}{\PYGZbs{}subfloat}\PYG{n+na}{[Case II]}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}includegraphics}\PYG{n+na}{[width=.4\PYGZbs{}linewidth]}\PYG{n+nb}{\PYGZob{}}example\PYGZhy{}image\PYGZhy{}b\PYG{n+nb}{\PYGZcb{}}\PYG{c}{\PYGZpc{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:second\PYG{n+nb}{\PYGZus{}}case\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Example figure with two sub figures.\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:two\PYG{n+nb}{\PYGZus{}}sub\PYG{n+nb}{\PYGZus{}}figures\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure*\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+Note that often IEEE papers with subfigures do not employ subfigure
+captions (using the optional argument to \PYG{k}{\PYGZbs{}verb}+\PYG{k}{\PYGZbs{}subfloat}\PYG{n+na}{[]}+), but instead will
+reference/describe all of them (a), (b), etc., within the main caption.
+Be aware that for subfig.sty to generate the (a), (b), etc., subfigure
+labels, the optional argument to \PYG{k}{\PYGZbs{}verb}+\PYG{k}{\PYGZbs{}subfloat}+ must be present. If a
+subcaption is not desired, just leave its contents blank,
+e.g., \PYG{k}{\PYGZbs{}verb}+\PYG{k}{\PYGZbs{}subfloat}\PYG{n+na}{[]}+.
+An example is shown in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}fig:two\PYG{n+nb}{\PYGZus{}}sub\PYG{n+nb}{\PYGZus{}}figures\PYG{n+nb}{\PYGZus{}}ieee\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure*\PYG{n+nb}{\PYGZcb{}}[!b]
+    \PYG{k}{\PYGZbs{}centering}
+    \PYG{k}{\PYGZbs{}subfloat}\PYG{n+na}{[]}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}includegraphics}\PYG{n+na}{[width=.4\PYGZbs{}linewidth]}\PYG{n+nb}{\PYGZob{}}example\PYGZhy{}image\PYGZhy{}a\PYG{n+nb}{\PYGZcb{}}\PYG{c}{\PYGZpc{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:first\PYG{n+nb}{\PYGZus{}}case\PYG{n+nb}{\PYGZus{}}ieee\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}hfil}
+    \PYG{k}{\PYGZbs{}subfloat}\PYG{n+na}{[]}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}includegraphics}\PYG{n+na}{[width=.4\PYGZbs{}linewidth]}\PYG{n+nb}{\PYGZob{}}example\PYGZhy{}image\PYGZhy{}b\PYG{n+nb}{\PYGZcb{}}\PYG{c}{\PYGZpc{}}
+    \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:second\PYG{n+nb}{\PYGZus{}}case\PYG{n+nb}{\PYGZus{}}ieee\PYG{n+nb}{\PYGZcb{}\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Example figure with two sub figures. IEEE style. (a) The first case. (b) The second case.\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}fig:two\PYG{n+nb}{\PYGZus{}}sub\PYG{n+nb}{\PYGZus{}}figures\PYG{n+nb}{\PYGZus{}}ieee\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure*\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Tables\PYG{n+nb}{\PYGZcb{}}
+
+Note that IEEE does not support \PYG{k}{\PYGZbs{}verb}+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}table\PYG{n+nb}{\PYGZcb{}}+, one has to use \PYG{k}{\PYGZbs{}verb}+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}+.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Simple Table\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}tab:simple\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}centering}
+  \PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}tabular\PYG{n+nb}{\PYGZcb{}\PYGZob{}}ll\PYG{n+nb}{\PYGZcb{}}
+    \PYG{k}{\PYGZbs{}toprule}
+    Heading1 \PYG{n+nb}{\PYGZam{}} Heading2 \PYG{k}{\PYGZbs{}\PYGZbs{}}
+    \PYG{k}{\PYGZbs{}midrule}
+    One      \PYG{n+nb}{\PYGZam{}} Two      \PYG{k}{\PYGZbs{}\PYGZbs{}}
+    Thee     \PYG{n+nb}{\PYGZam{}} Four     \PYG{k}{\PYGZbs{}\PYGZbs{}}
+    \PYG{k}{\PYGZbs{}bottomrule}
+  \PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}tabular\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{} Source: https://tex.stackexchange.com/a/468994/9075}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Table with diagonal line\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}tab:diag\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}center\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}tabular\PYG{n+nb}{\PYGZcb{}\PYGZob{}}|l|c|c|\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}hline}
+\PYG{k}{\PYGZbs{}diagbox}\PYG{n+na}{[width=10em]}\PYG{n+nb}{\PYGZob{}}Diag\PYG{k}{\PYGZbs{}\PYGZbs{}}Column Head I\PYG{n+nb}{\PYGZcb{}\PYGZob{}}Diag Column\PYG{k}{\PYGZbs{}\PYGZbs{}}Head II\PYG{n+nb}{\PYGZcb{}} \PYG{n+nb}{\PYGZam{}} Second \PYG{n+nb}{\PYGZam{}} Third \PYG{k}{\PYGZbs{}\PYGZbs{}}
+\PYG{k}{\PYGZbs{}hline}
+\PYG{n+nb}{\PYGZam{}} foo \PYG{n+nb}{\PYGZam{}} bar \PYG{k}{\PYGZbs{}\PYGZbs{}}
+\PYG{k}{\PYGZbs{}hline}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}tabular\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}center\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}figure\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Source Code\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}href}\PYG{n+nb}{\PYGZob{}}https://github.com/gpoore/minted\PYG{n+nb}{\PYGZcb{}\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}} is a sophisticated packes to enable properly highlighted listings.
+It uses the \PYG{k}{\PYGZbs{}href}\PYG{n+nb}{\PYGZob{}}http://pygments.org/\PYG{n+nb}{\PYGZcb{}\PYGZob{}}pygments\PYG{n+nb}{\PYGZcb{}} library, which in turn requires Python.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}Cref}\PYG{n+nb}{\PYGZob{}}lst:XML\PYG{n+nb}{\PYGZcb{}} shows source code written in XML.
+\PYG{k}{\PYGZbs{}refline}\PYG{n+nb}{\PYGZob{}}line:comment\PYG{n+nb}{\PYGZcb{}} contains a comment.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}}[htbp]
+    \PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}[linenos=true,escapeinside=||]\PYG{n+nb}{\PYGZob{}}xml\PYG{n+nb}{\PYGZcb{}}
+\PYGZlt{}listing name=\PYGZdq{}example\PYGZdq{}\PYGZgt{}
+  \PYGZlt{}!\PYGZhy{}\PYGZhy{} comment \PYGZhy{}\PYGZhy{}\PYGZgt{} |\PYG{k}{\PYGZbs{}labelline}\PYG{n+nb}{\PYGZob{}}line:comment\PYG{n+nb}{\PYGZcb{}}|
+  \PYGZlt{}content\PYGZgt{}not interesting\PYGZlt{}/content\PYGZgt{}
+\PYGZlt{}/listing\PYGZgt{}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Example XML listing using minted\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}lst:XML\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+One can also typeset JSON as shown in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}lst:flJSON\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}}[htbp]
+    \PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}[linenos=true,escapeinside=||]\PYG{n+nb}{\PYGZob{}}json\PYG{n+nb}{\PYGZcb{}}
+\PYG{n+nb}{\PYGZob{}}
+  key: \PYGZdq{}value\PYGZdq{}
+\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Example JSON listing using minted\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}lst:flJSON\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+Java is also possible as shown in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}lst:flJava\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}}[htbp]
+    \PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}[linenos=true,escapeinside=||]\PYG{n+nb}{\PYGZob{}}java\PYG{n+nb}{\PYGZcb{}}
+public class Hello \PYG{n+nb}{\PYGZob{}}
+    public static void main (String[] args) \PYG{n+nb}{\PYGZob{}}
+        System.out.println(\PYGZdq{}Hello World!\PYGZdq{});
+    \PYG{n+nb}{\PYGZcb{}}
+\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}minted\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}caption}\PYG{n+nb}{\PYGZob{}}Java code rendered using minted\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}lst:java\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}listing\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Itemization\PYG{n+nb}{\PYGZcb{}}
+
+One can list items as follows:
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}item} Item One
+\PYG{k}{\PYGZbs{}item} Item Two
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}itemize\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+With the package paralist, one can create itemizations with lesser spacing:
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}compactitem\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}item} Item One
+\PYG{k}{\PYGZbs{}item} Item Two
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}compactitem\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+One can enumerate items as follows:
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}enumerate\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}item} Item One
+  \PYG{k}{\PYGZbs{}item} Item Two
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}enumerate\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+With the package paralist, one can create enumerations with lesser spacing:
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}compactenum\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}item} Item One
+  \PYG{k}{\PYGZbs{}item} Item Two
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}compactenum\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+With paralist, one can even have all items typset after each other and have them clean in the tex document:
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}inparaenum\PYG{n+nb}{\PYGZcb{}}
+  \PYG{k}{\PYGZbs{}item} All these items...
+  \PYG{k}{\PYGZbs{}item} ...appear in one line
+  \PYG{k}{\PYGZbs{}item} This is enabled by the paralist package.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}inparaenum\PYG{n+nb}{\PYGZcb{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}subsection}\PYG{n+nb}{\PYGZob{}}Other Features\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+The words \PYG{k}{\PYGZbs{}enquote}\PYG{n+nb}{\PYGZob{}}workflow\PYG{n+nb}{\PYGZcb{}} and \PYG{k}{\PYGZbs{}enquote}\PYG{n+nb}{\PYGZob{}}dwarflike\PYG{n+nb}{\PYGZcb{}} can be copied from the PDF and pasted to a text file.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+The symbol for powerset is now correct: \PYG{l+s}{\PYGZdl{}}\PYG{n+nv}{\PYGZbs{}powerset}\PYG{l+s}{\PYGZdl{}} and not a Weierstrass p (\PYG{l+s}{\PYGZdl{}}\PYG{n+nv}{\PYGZbs{}wp}\PYG{l+s}{\PYGZdl{}}).
+
+\PYG{l+s}{\PYGZdl{}}\PYG{n+nv}{\PYGZbs{}powerset}\PYG{o}{(}\PYG{n+nb}{\PYGZob{}}\PYG{l+m}{1}\PYG{n+nb}{,}\PYG{l+m}{2}\PYG{n+nb}{,}\PYG{l+m}{3}\PYG{n+nb}{\PYGZcb{}}\PYG{o}{)}\PYG{l+s}{\PYGZdl{}}
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+Brackets work as designed:
+\PYGZlt{}test\PYGZgt{}
+One can also input backquotes in verbatim text: \PYG{k}{\PYGZbs{}verb}|`test`|.
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}ltgexample\PYG{n+nb}{\PYGZcb{}}
+
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{k}{\PYGZbs{}section}\PYG{n+nb}{\PYGZob{}}Conclusion\PYG{n+nb}{\PYGZcb{}}\PYG{k}{\PYGZbs{}label}\PYG{n+nb}{\PYGZob{}}sec:conclusion\PYG{n+nb}{\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+Your conclusions are not just a factual summary of your work, but they position, interpret, and defend your findings against the state of the art that you discussed in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:state\PYGZhy{}of\PYGZhy{}art\PYG{n+nb}{\PYGZcb{}}. You specifically outline which concrete findings or methodological contributions advance our knowledge towards the general objective you introduced in \PYG{k}{\PYGZbs{}cref}\PYG{n+nb}{\PYGZob{}}sec:introduction:topic\PYG{n+nb}{\PYGZcb{}}. Objectively discuss which parts you solved and in which parts you failed.
+
+You should explicitly discuss limitations and shortcomings of your work and detail what kind of future studies are needed to overcome these limitations. Be specific in the sense that your arguments for future work should be based on concrete findings and insights you obtained in your report.
+
+\PYG{c}{\PYGZpc{} regular IEEE prefers the singular form}
+\PYG{k}{\PYGZbs{}section*}\PYG{n+nb}{\PYGZob{}}Acknowledgment\PYG{n+nb}{\PYGZcb{}}
+The hints on writing a paper/thesis are taken from Dirk Fahland\PYGZsq{}s \PYG{k}{\PYGZbs{}href}\PYG{n+nb}{\PYGZob{}}https://github.com/dfahland/Master\PYGZhy{}or\PYGZhy{}Bachelor\PYGZhy{}thesis\PYGZhy{}Template\PYGZhy{}Eindhoven\PYGZhy{}University\PYGZhy{}of\PYGZhy{}Technology\PYG{n+nb}{\PYGZcb{}\PYGZob{}}LaTeX template for Bachelor and Master theses at Eindhoven University of Technology\PYG{n+nb}{\PYGZcb{}}.
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} Bibliography}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+In the bibliography, use \PYG{k}{\PYGZbs{}texttt}\PYG{n+nb}{\PYGZob{}}\PYG{k}{\PYGZbs{}textbackslash} textsuperscript\PYG{n+nb}{\PYGZcb{}} for \PYG{k}{\PYGZbs{}enquote}\PYG{n+nb}{\PYGZob{}}st\PYG{n+nb}{\PYGZcb{}}, \PYG{k}{\PYGZbs{}enquote}\PYG{n+nb}{\PYGZob{}}nd\PYG{n+nb}{\PYGZcb{}}, \PYG{k}{\PYGZbs{}ldots}:
+E.g., \PYG{k}{\PYGZbs{}enquote}\PYG{n+nb}{\PYGZob{}}The 2\PYG{k}{\PYGZbs{}textsuperscript}\PYG{n+nb}{\PYGZob{}}nd\PYG{n+nb}{\PYGZcb{}} conference on examples\PYG{n+nb}{\PYGZcb{}}.
+When you use \PYG{k}{\PYGZbs{}href}\PYG{n+nb}{\PYGZob{}}https://www.jabref.org\PYG{n+nb}{\PYGZcb{}\PYGZob{}}JabRef\PYG{n+nb}{\PYGZcb{}}, you can use the clean up command to achieve that.
+See \PYG{k}{\PYGZbs{}url}\PYG{n+nb}{\PYGZob{}}https://help.jabref.org/en/CleanupEntries\PYG{n+nb}{\PYGZcb{}} for an overview of the cleanup functionality.
+
+\PYG{c}{\PYGZpc{} trigger a \PYGZbs{}newpage just before the given reference}
+\PYG{c}{\PYGZpc{} number \PYGZhy{} used to balance the columns on the last page}
+\PYG{c}{\PYGZpc{} adjust value as needed \PYGZhy{} may need to be readjusted if}
+\PYG{c}{\PYGZpc{} the document is modified later}
+\PYG{c}{\PYGZpc{}\PYGZbs{}IEEEtriggeratref\PYGZob{}8\PYGZcb{}}
+\PYG{c}{\PYGZpc{} The \PYGZdq{}triggered\PYGZdq{} command can be changed if desired:}
+\PYG{c}{\PYGZpc{}\PYGZbs{}IEEEtriggercmd\PYGZob{}\PYGZbs{}enlargethispage\PYGZob{}\PYGZhy{}5in\PYGZcb{}\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enable to reduce spacing between bibitems (source: https://tex.stackexchange.com/a/25774)}
+\PYG{c}{\PYGZpc{} \PYGZbs{}def\PYGZbs{}IEEEbibitemsep\PYGZob{}0pt plus .5pt\PYGZcb{}}
+
+\PYG{k}{\PYGZbs{}bibliographystyle}\PYG{n+nb}{\PYGZob{}}IEEEtranN\PYG{n+nb}{\PYGZcb{}} \PYG{c}{\PYGZpc{} IEEEtranN is the natbib compatible bst file}
+\PYG{c}{\PYGZpc{} argument is your BibTeX string definitions and bibliography database(s)}
+\PYG{k}{\PYGZbs{}bibliography}\PYG{n+nb}{\PYGZob{}}paper\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{} Enfore empty line after bibliography}
+\PYG{k}{\PYGZbs{} \PYGZbs{}\PYGZbs{}}
+\PYG{c}{\PYGZpc{}}
+All links were last followed on October 5, 2020.
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{c}{\PYGZpc{}\PYGZbs{}appendix}
+\PYG{c}{\PYGZpc{}\PYGZbs{}addcontentsline\PYGZob{}toc\PYGZcb{}\PYGZob{}chapter\PYGZcb{}\PYGZob{}APPENDICES\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}\PYGZbs{}listoffigures}
+\PYG{c}{\PYGZpc{}\PYGZbs{}listoftables}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+\PYG{c}{\PYGZpc{}\PYGZbs{}section\PYGZob{}My first appendix\PYGZcb{}\PYGZbs{}label\PYGZob{}sec:appendix1\PYGZcb{}}
+\PYG{c}{\PYGZpc{}\PYGZpc{}\PYGZpc{} ===============================================================================}
+
+\PYG{k}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}}document\PYG{n+nb}{\PYGZcb{}}
+\end{Verbatim}
