@@ -22,5 +22,5 @@ RUN chmod +x cmake-3.22.1-linux-x86_64.sh && ./cmake-3.22.1-linux-x86_64.sh --sk
 WORKDIR /root/app/openpose/build 
 RUN  && cmake -DBUILD_PYTHON=ON ..
 RUN make -j`nproc`
-WORKDIR /root/openpose
+WORKDIR /root/app/openpose
 
