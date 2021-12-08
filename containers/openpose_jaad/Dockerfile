@@ -20,7 +20,6 @@ RUN chmod +x cmake-3.22.1-linux-x86_64.sh && ./cmake-3.22.1-linux-x86_64.sh --sk
 
 # Install OpenPose
 WORKDIR /root/app/openpose/build 
-RUN  && cmake -DBUILD_PYTHON=ON ..
+RUN cmake -DBUILD_PYTHON=ON ..
 RUN make -j`nproc`
 WORKDIR /root/app/openpose
-
