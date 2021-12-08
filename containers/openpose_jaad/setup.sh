@@ -4,7 +4,7 @@ SKIP_NVIDIA_DOCKER=false
 while [ "$1" != "" ]; do
     case $1 in
         --skip-nvidia-docker)
-            SKIP_JAAD=true
+            SKIP_NVIDIA_DOCKER=true
         ;;
         *)
             exit 1
