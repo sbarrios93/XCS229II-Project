@@ -40,7 +40,8 @@ if [[ $SKIP_NVIDIA_DOCKER == false ]]; then
 fi
 
 # make directory for app
-mkdir app && cd app
+mkdir -p app
+cd app
 
 # Clone openpose
 echo ":::Cloning openpose"
@@ -48,8 +49,8 @@ git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git
 
 # Clone JAAD
 echo ":::Cloning JAAD"
-git clone https://github.com/ykotseruba/JAAD.git jaad
+git clone https://github.com/ykotseruba/JAAD.git jaad && cd jaad
 
 echo ":::Download JAAD Clips"
-chmod +x jaad/download_clips.sh
-./jaad/download_clips.sh
+chmod +x download_clips.sh
+./download_clips.sh

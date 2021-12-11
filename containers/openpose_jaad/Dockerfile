@@ -23,3 +23,9 @@ WORKDIR /root/app/openpose/build
 RUN cmake -DBUILD_PYTHON=ON ..
 RUN make -j`nproc`
 WORKDIR /root/app/openpose
+
+# Install model_25b
+WORKDIR /root/app/openpose/experimental_models/1_25BSuperModel11FullVGG/body_25b
+RUN curl -fsSL -o pose_iter_XXXXXX.caffemodel posefs1.perception.cs.cmu.edu/OpenPose/models/pose/1_25BSuperModel11FullVGG/body_25b/pose_iter_XXXXXX.caffemodel
+WORKDIR /root/app/openpose
+RUN cp -r experimental_models/1_25BSuperModel11FullVGG/body_25b models/pose/          
