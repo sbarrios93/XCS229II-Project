@@ -150,15 +150,6 @@ def get_and_crop_images(queue_range=346):
         # if image_dir doesnt exist, create it
         Path.mkdir(image_dir, exist_ok=True, parents=True)    
         
-        # if the number of frames already on the folder is more than 
-        # 300, the video has most likely already been split into frames
-        # and we dont need to do it again
-        if len(glob.glob(str(image_dir) + "/*")) < 300:
-            get_frames(JAAD_CLIPS_DIR, video_name, image_dir)
-        else:
-            print(f"Frames for {video_name} have already been extracted, skipping process")
-
-        
         crops_metadata_filepath = OP_PROCESSING_DIR / video_name / CROPS_METADATA_FILENAME
         crops_metadata_dict = dict()
         
@@ -167,6 +158,7 @@ def get_and_crop_images(queue_range=346):
         if os.path.exists(crops_metadata_filepath):
             print(f"\nCrops metadata for {video_name} already exists, skipping process")
         else:
+            get_frames(JAAD_CLIPS_DIR, video_name, image_dir)
             with open(metadata_filepath, "r") as f:
                 data = json.load(f)
 
