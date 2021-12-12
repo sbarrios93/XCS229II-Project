@@ -1,11 +1,12 @@
 from src import skeleton_pipeline
 import yaml
 import argparse
+import os
 
 # Instantiate the parser
 parser = argparse.ArgumentParser(description='Infer skeleton of images. Usage: python main.py openpose_dir output_dir')
 
-parser.add_argument('openpose_dir', type=str, help='Path to openpose directory')
+parser.add_argument('openpose_dir', type=str, help='Path to openpose directory', default=os.environ['OPENPOSE'])
 parser.add_argument('output_dir', type=str, help='Path to output directory')
 parser.add_argument('--skip-annotations', dest='skip_annotations', action='store_true', help='Skip annotation step')
 parser.add_argument('--skip-cropping', dest='skip_cropping', action='store_true', help='Skip cropping step')
