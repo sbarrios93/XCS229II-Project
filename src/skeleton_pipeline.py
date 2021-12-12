@@ -250,7 +250,8 @@ def infer_clip(openpose_root_dir, output_dir_path, selected_videos, opt_flags):
         
         # add flags
         for flag, value in flags.items():
-            if value is (not None and not "None"):
+
+            if value != None:
                 full_command_list += ["--" + flag, value]
             else:
                 full_command_list += ["--" + flag]
