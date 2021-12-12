@@ -32,3 +32,6 @@ def run_pipeline(openpose_dir = args.openpose_dir, output_dir = args.output_dir,
     if not skip_cropping:
         skeleton_pipeline.get_and_crop_images()
     skeleton_pipeline.infer_clip(openpose_dir, output_dir, selected_videos)
+    
+if __name__ == '__main__':
+    run_pipeline()
