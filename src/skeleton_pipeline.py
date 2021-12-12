@@ -9,7 +9,6 @@ from pathlib import Path
 from unicodedata import name
 
 import cv2
-from importlib_metadata import pathlib
 
 # padding of leading zeros on video names
 VIDEO_NAME_ZERO_PADDING = 4
@@ -156,62 +155,71 @@ def get_and_crop_images(queue_range=346):
         # if image_dir doesnt exist, create it
         Path.mkdir(image_dir, exist_ok=True, parents=True)    
         
-
-        get_frames(JAAD_CLIPS_DIR, video_name, image_dir)
+        # if the number of frames already on the folder is more than 
+        # 300, the video has most likely already been split into frames
+        # and we dont need to do it again
+        if len(glob.glob(str(image_dir) + "/*")) < 300:
+            get_frames(JAAD_CLIPS_DIR, video_name, image_dir)
+            print(f"Frames for {video_name} have already been extracted, skipping process")
 
         
         crops_metadata_filepath = OP_PROCESSING_DIR / video_name / CROPS_METADATA_FILENAME
         crops_metadata_dict = dict()
-
-        with open(metadata_filepath, "r") as f:
-            data = json.load(f)
-
-        tracks = list(data.keys())
-
-        for track in tracks:
-            crops_metadata_dict[track] = dict()
-            # DIR to save cropped images
-            cropped_im_dir = OP_PROCESSING_DIR / video_name / CROPPED_DIR / track
-            Path.mkdir(cropped_im_dir, exist_ok=True, parents=True)
-
-            frames = list(data[track].keys())
-
-            # for each frame theres an image, let's get the image full path for the frame and crop it using the bbox, save it
-            for frame in frames:
-                print(frame, end='\r', flush=True)
-                frame_filename = str(frame).zfill(IMG_NAME_ZERO_PADDING) + ".png"
-                frame_filepath = image_dir / frame_filename
-
-                frame_data = data[track][frame]
-
-                img = cv2.imread(str(frame_filepath))
-
-                (left, top, right, bottom) = (
-                    int(float(frame_data["xtl"])),
-                    int(float(frame_data["ytl"])),
-                    int(float(frame_data["xbr"])),
-                    int(float(frame_data["ybr"])),
-                )
-
-                left = max(0, left - int(BORDER_PADDING * (right - left)))
-                right = min(1920, right + int(BORDER_PADDING * (right - left)))
-                top = max(0, top - int(BORDER_PADDING * (bottom - top)))
-                bottom = min(1080, bottom + int(BORDER_PADDING * (bottom - top)))
-
-                crops_metadata_dict[track][frame] = {"left": left, "top": top, "right": right, "bottom": bottom}
-
-                # crop image
-                cropped_img = img[top:bottom, left:right]
-                (height, width, filters) = cropped_img.shape
-
-                cv2.imwrite(str(cropped_im_dir / f"{int(frame):0{IMG_NAME_ZERO_PADDING}d}.png"), cropped_img)
-        print('\n')
-        # delete folder with all the full images to save space
-        shutil.rmtree(str(image_dir), ignore_errors=True)
-           
         
-        with open(crops_metadata_filepath, "w") as f:
-            json.dump(crops_metadata_dict, f, indent=4)
+        # if crops metadata file exists, that means thatq the crop images
+        # already exists. Don't repeat the process again in that case.
+        if os.path.exists(crops_metadata_filepath):
+            print(f"Crops metadata for {video_name} already exists, skipping process")
+        else:
+            with open(metadata_filepath, "r") as f:
+                data = json.load(f)
+
+            tracks = list(data.keys())
+
+            for track in tracks:
+                crops_metadata_dict[track] = dict()
+                # DIR to save cropped images
+                cropped_im_dir = OP_PROCESSING_DIR / video_name / CROPPED_DIR / track
+                Path.mkdir(cropped_im_dir, exist_ok=True, parents=True)
+
+                frames = list(data[track].keys())
+
+                # for each frame theres an image, let's get the image full path for the frame and crop it using the bbox, save it
+                for frame in frames:
+                    print(frame, end='\r', flush=True)
+                    frame_filename = str(frame).zfill(IMG_NAME_ZERO_PADDING) + ".png"
+                    frame_filepath = image_dir / frame_filename
+
+                    frame_data = data[track][frame]
+
+                    img = cv2.imread(str(frame_filepath))
+
+                    (left, top, right, bottom) = (
+                        int(float(frame_data["xtl"])),
+                        int(float(frame_data["ytl"])),
+                        int(float(frame_data["xbr"])),
+                        int(float(frame_data["ybr"])),
+                    )
+
+                    left = max(0, left - int(BORDER_PADDING * (right - left)))
+                    right = min(1920, right + int(BORDER_PADDING * (right - left)))
+                    top = max(0, top - int(BORDER_PADDING * (bottom - top)))
+                    bottom = min(1080, bottom + int(BORDER_PADDING * (bottom - top)))
+
+                    crops_metadata_dict[track][frame] = {"left": left, "top": top, "right": right, "bottom": bottom}
+
+                    # crop image
+                    cropped_img = img[top:bottom, left:right]
+                    (height, width, filters) = cropped_img.shape
+
+                    cv2.imwrite(str(cropped_im_dir / f"{int(frame):0{IMG_NAME_ZERO_PADDING}d}.png"), cropped_img)
+            print('\n')
+            # delete folder with all the full images to save space
+            shutil.rmtree(str(image_dir), ignore_errors=True)
+            
+            
+            with open(crops_metadata_filepath, "w") as f:
+                json.dump(crops_metadata_dict, f, indent=4)
 
 def get_crop_paths():
     return glob.glob(str(OP_PROCESSING_DIR / "video*" / CROPPED_DIR / "*"))    
@@ -221,7 +229,7 @@ def get_data_from_path(path):
         [_, video_name, _, track] = split_1.split("/")
         return video_name, track
 
-def infer_clip(openpose_root_dir):
+def infer_clip(openpose_root_dir, output_dir_path):
     """%cd ../../openpose/
     
         !./build/examples/openpose/openpose.bin --image_dir ../pedestrians/openpose_processing/video_0001/cropped/0_1_2b --write_json ../pedestrians/openpose_processing/video_0001/output/json --write_images ../pedestrians/openpose_processing/video_0001/output/images --display 0 
@@ -255,8 +263,8 @@ def infer_clip(openpose_root_dir):
             video_name, track = get_data_from_path(path)
             
             flags = {
-                "write_json": "/root/output/json/" + video_name + "/" + track,
-                "write_images": "/root/output/images/" + video_name + "/" + track,
+                "write_json": output_dir_path + "/json/" + video_name + "/" + track,
+                "write_images": output_dir_path + "/images/" + video_name + "/" + track,
                 "display": "0"
             }    
             
@@ -264,7 +272,7 @@ def infer_clip(openpose_root_dir):
             Path.mkdir(Path(flags["write_images"]), exist_ok=True, parents=True)
             
             command_list = build_command(path, flags)
-            print(command_list.join(" "))
+            print(" ".join(command_list))
             subprocess.run(command_list)
     
     run_command()
