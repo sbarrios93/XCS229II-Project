@@ -3,7 +3,7 @@
 data/**/*.mp4
 data/**/*.png
 data/**/*.xml
-openpose_processing/**/*.png
+openpose_processing
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

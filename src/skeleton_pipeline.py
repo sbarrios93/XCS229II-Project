@@ -133,7 +133,7 @@ def get_annotations():
 
 def get_frames(video_dirpath, video_name, output_dir_path):
     video_path = str(video_dirpath / video_name) + ".mp4"
-    frame_extract.video_to_frames(video_path=video_path, frames_dir=output_dir_path, overwrite=True, every=1, chunk_size=1000)
+    frame_extract.video_to_frames(video_path=video_path, frames_dir=output_dir_path, overwrite=True, every=1, chunk_size=50)
 
 def get_and_crop_images(queue_range=346):
     

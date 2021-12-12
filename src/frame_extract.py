@@ -125,8 +125,3 @@ def video_to_frames(video_path, frames_dir, overwrite=False, every=1, chunk_size
             print_progress(i, len(frame_chunks)-1, prefix=prefix_str, suffix='Complete')  # print it's progress
 
     return os.path.join(frames_dir, video_filename)  # when done return the directory containing the frames
-
-
-if __name__ == '__main__':
-    # test it
-    video_to_frames(video_path='/Users/seba/local-projects/pedestrians/data/JAAD_clips/video_0011.mp4', frames_dir='/Users/seba/local-projects/pedestrians/data/images/', overwrite=True, every=1, chunk_size=1000)
