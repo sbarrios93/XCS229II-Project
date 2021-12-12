@@ -140,6 +140,7 @@ def get_and_crop_images(queue_range=346):
     
     queue_path=get_queue(queue_range)
     counter = 0
+    time_tracker = 0
     for video_name in queue_path.keys():
         t0 = time.time()
         # set required paths
@@ -217,9 +218,12 @@ def get_and_crop_images(queue_range=346):
                 json.dump(crops_metadata_dict, f, indent=4)
             
         counter += 1
-        print("Elapsed time: ", time.time() - t0, " seconds")
+        time_diff = time.time() - t0
+        time_tracker += time_diff
+        mean_time = time_tracker / counter
+        print("Elapsed time: ", time_diff, " seconds")
         print("\n")
-        print("Time remaining: ", (time.time() - t0) * (len(queue_path) - counter), " seconds")
+        print("Time remaining: ", mean_time * (len(queue_path) - counter), " seconds")
         print("\n")
         print("Processed ", counter, " out of ", len(queue_path), " videos")
         print("\n")
