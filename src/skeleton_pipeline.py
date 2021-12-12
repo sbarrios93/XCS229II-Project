@@ -229,7 +229,7 @@ def get_data_from_path(path):
         [_, video_name, _, track] = split_1.split("/")
         return video_name, track
 
-def infer_clip(openpose_root_dir, output_dir_path):
+def infer_clip(openpose_root_dir, output_dir_path, selected_videos, opt_flags):
     """%cd ../../openpose/
     
         !./build/examples/openpose/openpose.bin --image_dir ../pedestrians/openpose_processing/video_0001/cropped/0_1_2b --write_json ../pedestrians/openpose_processing/video_0001/output/json --write_images ../pedestrians/openpose_processing/video_0001/output/images --display 0 
@@ -254,26 +254,32 @@ def infer_clip(openpose_root_dir, output_dir_path):
         
         return full_command_list
     
-    def run_command():
+    def run_command(opt_flags=opt_flags, selected_videos=selected_videos):
         paths = get_crop_paths()
         
         os.chdir(openpose_root_dir)
         
         for path in paths:
             video_name, track = get_data_from_path(path)
+            if video_name in selected_videos:
             
-            flags = {
-                "write_json": output_dir_path + "/json/" + video_name + "/" + track,
-                "write_images": output_dir_path + "/images/" + video_name + "/" + track,
-                "display": "0"
-            }    
-            
-            Path.mkdir(Path(flags["write_json"]), exist_ok=True, parents=True)
-            Path.mkdir(Path(flags["write_images"]), exist_ok=True, parents=True)
-            
-            command_list = build_command(path, flags)
-            print(" ".join(command_list))
-            subprocess.run(command_list)
+                built_in_flags = {
+                    "write_json": output_dir_path + "/json/" + video_name + "/" + track,
+                    "write_images": output_dir_path + "/images/" + video_name + "/" + track,
+                }    
+                
+                Path.mkdir(Path(built_in_flags["write_json"]), exist_ok=True, parents=True)
+                Path.mkdir(Path(built_in_flags["write_images"]), exist_ok=True, parents=True)
+                
+                
+                flags = {**built_in_flags, **opt_flags}
+                print(f"Inferring {video_name}")
+                command_list = build_command(path, flags)
+                print("Commands:", command_list)
+                subprocess.run(command_list)
+                print(f"Inferred {video_name}")
+            else:
+                print("Skipping ", video_name)
     
     run_command()
         
