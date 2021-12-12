@@ -6,6 +6,9 @@ import shutil
 import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
+from zmq import frame
+import frame_extract
 from unicodedata import name
 
 import cv2
@@ -131,17 +134,7 @@ def get_annotations():
 
 def get_frames(video_dirpath, video_name, output_dir_path):
     video_path = str(video_dirpath / video_name) + ".mp4"
-    video = cv2.VideoCapture(video_path)
-    ok, frame = video.read()
-    count = 0
-    while ok:
-        output_path = str(output_dir_path / f"{count:0{IMG_NAME_ZERO_PADDING}d}.png")
-        cv2.imwrite(output_path, frame)
-        print('WRITTEN FRAME:',count, end='\r', flush=True)
-        count+=1
-        ok, frame = video.read()
-    video.release()
-    print('Done! \n')
+    frame_extract.video_to_frames(video_path=video_path, frames_dir=output_dir_path, overwrite=True, every=1, chunk_size=1000)
 
 def get_and_crop_images(queue_range=346):
     
