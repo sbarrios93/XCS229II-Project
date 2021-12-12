@@ -7,7 +7,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-import frame_extract
+import src.frame_extract as frame_extract
 from unicodedata import name
 
 import cv2
