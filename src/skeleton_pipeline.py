@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
+import time
 
 import src.frame_extract as frame_extract
 from unicodedata import name
@@ -138,8 +139,9 @@ def get_frames(video_dirpath, video_name, output_dir_path):
 def get_and_crop_images(queue_range=346):
     
     queue_path=get_queue(queue_range)
-    
+    counter = 0
     for video_name in queue_path.keys():
+        t0 = time.time()
         # set required paths
         image_dir = IMG_DIR / video_name
         metadata_filepath = OP_PROCESSING_DIR / video_name / BBOX_METADATA_FILENAME
@@ -152,6 +154,7 @@ def get_and_crop_images(queue_range=346):
         # and we dont need to do it again
         if len(glob.glob(str(image_dir) + "/*")) < 300:
             get_frames(JAAD_CLIPS_DIR, video_name, image_dir)
+        else:
             print(f"Frames for {video_name} have already been extracted, skipping process")
 
         
@@ -212,7 +215,14 @@ def get_and_crop_images(queue_range=346):
             
             with open(crops_metadata_filepath, "w") as f:
                 json.dump(crops_metadata_dict, f, indent=4)
-
+            
+        counter += 1
+        print("Elapsed time: ", time.time() - t0, " seconds")
+        print("\n")
+        print("Time remaining: ", (time.time() - t0) * (len(queue_path) - counter), " seconds")
+        print("\n")
+        print("Processed ", counter, " out of ", len(queue_path), " videos")
+        print("\n")
 def get_crop_paths():
     return glob.glob(str(OP_PROCESSING_DIR / "video*" / CROPPED_DIR / "*"))    
 
