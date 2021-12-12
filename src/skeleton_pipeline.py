@@ -1,12 +1,12 @@
-from __future__ import annotations
+
 import glob
 import json
 import os
+import shutil
+import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from unicodedata import name
-import shutil
-import sys
 
 import cv2
 from importlib_metadata import pathlib
@@ -204,7 +204,7 @@ def get_and_crop_images(queue_range=346):
                 cropped_img = img[top:bottom, left:right]
                 (height, width, filters) = cropped_img.shape
 
-                cv2.imwrite(str(cropped_im_dir / f"{frame}.png"), cropped_img)
+                cv2.imwrite(str(cropped_im_dir / f"{int(frame):0{IMG_NAME_ZERO_PADDING}d}.png"), cropped_img)
         print('\n')
         # delete folder with all the full images to save space
         shutil.rmtree(str(image_dir), ignore_errors=True)
@@ -212,3 +212,63 @@ def get_and_crop_images(queue_range=346):
         
         with open(crops_metadata_filepath, "w") as f:
             json.dump(crops_metadata_dict, f, indent=4)
+
+def get_crop_paths():
+    return glob.glob(str(OP_PROCESSING_DIR / "video*" / CROPPED_DIR / "*"))    
+
+def get_data_from_path(path):
+        split_1 = path.split(str(OP_PROCESSING_DIR))[1]
+        [_, video_name, _, track] = split_1.split("/")
+        return video_name, track
+
+def infer_clip(openpose_root_dir):
+    """%cd ../../openpose/
+    
+        !./build/examples/openpose/openpose.bin --image_dir ../pedestrians/openpose_processing/video_0001/cropped/0_1_2b --write_json ../pedestrians/openpose_processing/video_0001/output/json --write_images ../pedestrians/openpose_processing/video_0001/output/images --display 0 
+
+    """
+    def build_command(path_to_clip_as_image_folder, flags):
+        full_command_list = list()
+        
+        # path to executable
+        bin_path_execute = "./build/examples/openpose/openpose.bin"
+        full_command_list.append(bin_path_execute)
+        
+        # flags to pass to command
+        image_args =  ["--image_dir", path_to_clip_as_image_folder]
+        
+        # add image_args to full_command_list
+        full_command_list += image_args
+        
+        # add flags
+        for flag, value in flags.items():
+            full_command_list += ["--" + flag, value]
+        
+        return full_command_list
+    
+    def run_command():
+        paths = get_crop_paths()
+        
+        os.chdir(openpose_root_dir)
+        
+        for path in paths:
+            video_name, track = get_data_from_path(path)
+            
+            flags = {
+                "write_json": "/root/output/json/" + video_name + "/" + track,
+                "write_images": "/root/output/images/" + video_name + "/" + track,
+                "display": "0"
+            }    
+            
+            Path.mkdir(Path(flags["write_json"]), exist_ok=True, parents=True)
+            Path.mkdir(Path(flags["write_images"]), exist_ok=True, parents=True)
+            
+            command_list = build_command(path, flags)
+            print(command_list.join(" "))
+            subprocess.run(command_list)
+    
+    run_command()
+        
+    
+    
+    
