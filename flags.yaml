@@ -1,5 +1,5 @@
 model_pose: BODY_25B
-net_resolution: 1280x-1
+net_resolution_dynamic:
 scale_number: "4"
 scale_gap: "0.25"
 display: "0"
