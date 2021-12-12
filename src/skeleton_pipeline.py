@@ -165,7 +165,7 @@ def get_and_crop_images(queue_range=346):
         # if crops metadata file exists, that means thatq the crop images
         # already exists. Don't repeat the process again in that case.
         if os.path.exists(crops_metadata_filepath):
-            print(f"Crops metadata for {video_name} already exists, skipping process")
+            print(f"\nCrops metadata for {video_name} already exists, skipping process")
         else:
             with open(metadata_filepath, "r") as f:
                 data = json.load(f)
@@ -221,10 +221,9 @@ def get_and_crop_images(queue_range=346):
         time_diff = time.time() - t0
         time_tracker += time_diff
         mean_time = time_tracker / counter
+        print("\n")
         print("Elapsed time: ", time_diff, " seconds")
-        print("\n")
         print("Time remaining: ", mean_time * (len(queue_path) - counter), " seconds")
-        print("\n")
         print("Processed ", counter, " out of ", len(queue_path), " videos")
         print("\n")
 def get_crop_paths():
