@@ -24,6 +24,8 @@ with open('selected_videos', 'r') as f:
 with open('flags.yaml', 'r') as f:
     opt_flags = yaml.safe_load(f)
 
+opt_flags = [f for f in opt_flags if f not None]
+
 
 def run_pipeline(openpose_dir = args.openpose_dir, output_dir = args.output_dir,skip_annotations=args.skip_annotations, skip_cropping=args.skip_cropping, selected_videos=selected_videos, opt_flags=opt_flags):
 
