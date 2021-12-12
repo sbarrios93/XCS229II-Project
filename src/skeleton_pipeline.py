@@ -7,7 +7,6 @@ import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from zmq import frame
 import frame_extract
 from unicodedata import name
 
