@@ -1,6 +1,7 @@
 
 # avoid media files from dataset
 data/**/*.mp4
+data/**/*.json
 data/**/*.png
 data/**/*.xml
 openpose_processing

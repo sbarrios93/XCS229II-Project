@@ -13,152 +13,46 @@ from unicodedata import name
 
 import cv2
 
+# TODO: adapt to new annotation database.
+
 # padding of leading zeros on video names
 VIDEO_NAME_ZERO_PADDING = 4
 # padding of leading zeros on static images names
 IMG_NAME_ZERO_PADDING = 5
 # Static Paths
 ROOT_DIR = Path(".").parent.resolve()
-DATA_DIR = ROOT_DIR / "data"
-ANNOTATIONS_DIR = DATA_DIR / "annotations"
-
-## JAAD Clips path
-JAAD_CLIPS_DIR = DATA_DIR / "JAAD_clips"
-
-# static image dir
-IMG_DIR = DATA_DIR / "images"
-# OPENPOSE_PROCESSING_DIR
-OP_PROCESSING_DIR = ROOT_DIR / "openpose_processing"
-# Make dir if it doesnt exist, don't complain if it does
-OP_PROCESSING_DIR.mkdir(exist_ok=True, parents=True)
-# BBOX_METADATA FILENAME
-BBOX_METADATA_FILENAME = "bbox_metadata.json"
-# Metadata of Crops Filename
-CROPS_METADATA_FILENAME = "crops_metadata.json"
-
 # Video prefix
 VIDEO_PREFIX = "video_"
-
 # Directory of cropped images
 CROPPED_DIR = "cropped"
-
 # how much padding (%) to leave around bounding box when cropping images
 BORDER_PADDING = 0.3
-
-
-
-
-def get_queue(
-    range_stop=346,
-    range_start=0,
-    video_prefix=VIDEO_PREFIX,
-    video_zero_padding=VIDEO_NAME_ZERO_PADDING,
-    annotations_dir=ANNOTATIONS_DIR,
-):
-    """
-    Returns a dict of video names in the form of
-    video_name: path to annotation file
-    """
-
-    # create list of videos to process using JAAD file formatting video_000\d.mp4
-    queue_list = [video_prefix + str(i + 1).zfill(video_zero_padding) for i in range(range_start, range_stop)]
-
-    # get list of all annotation files
-    xml_files = glob.glob(str(annotations_dir / "*.xml"))
-
-    # get list of files that appear in queue
-    return {
-        (xml.split("/")[-1]).split(".")[0]: xml for xml in xml_files if (xml.split("/")[-1]).split(".")[0] in queue_list
-    }
-
-
-def get_annotations():
-    def parse_tracks(filepath):
-        # here will go the data that will output to json
-        tracks_dict = dict()
-
-        # run xml parser
-        tree = ET.parse(filepath)
-        root = tree.getroot()
-
-        # find all tracks in the xml file that contain the label pedestrian
-        tracks = [t for t in root.findall("track") if t.attrib.get("label", None) == "pedestrian"]
-
-        # for each track, find all the bounding boxes and their metadata "items", we also need the id which
-        # is the id of each pedestrian
-        for i, track in enumerate(tracks):
-            # the id is inside the box, so we need to retrieve it later, we start with id=None
-            # to check later if id = None, else set it on the first iteration
-            id = None
-            boxes = track.findall(".//box")
-            for box in boxes:
-                if id is None:
-                    id = box.findall(".//attribute/[@name='id']")[0].text
-                    tracks_dict[id] = {}
-                occlusion = box.findall(".//attribute/[@name='occlusion']")[0].text
-                cross = box.findall(".//attribute/[@name='cross']")[0].text
-                items = dict(box.items())
-                items["occlusion"] = occlusion
-                items["cross"] = cross
-                frame = items["frame"]
-                tracks_dict[id][frame] = items
-        return tracks_dict
-
-    def save_bbox_metadata(path, video_name, name, data):
-
-        path_dir = path / video_name
-        filepath_dir = path_dir / name
-
-        # make dir if it doesnt exist, don't complain if it does
-        Path.mkdir(path_dir, exist_ok=True, parents=True)
-
-        with open(filepath_dir, "w") as f:
-            f.write(json.dumps(data, indent=4))
-        return 1
-
-    # start the loop, save the metadata
-    def get_save_annotations(queue_range=346):
-        queue_path=get_queue(queue_range)
-        for video_name, filepath in queue_path.items():
-            try:
-                data = parse_tracks(filepath)
-                save_bbox_metadata(
-                    path=OP_PROCESSING_DIR, video_name=video_name, name=BBOX_METADATA_FILENAME, data=data
-                )
-            except Exception as e:
-                print(e)
-                print(f"Error processing annotation for {video_name}")
-                continue
-
-    get_save_annotations()
 
 def get_frames(video_dirpath, video_name, output_dir_path):
     video_path = str(video_dirpath / video_name) + ".mp4"
     frame_extract.video_to_frames(video_path=video_path, frames_dir=output_dir_path, overwrite=True, every=1, chunk_size=50)
 
-def get_and_crop_images(queue_range=346):
+def get_and_crop_images(jaad_db, jaad_obj):
     
-    queue_path=get_queue(queue_range)
+    
+    
     counter = 0
     time_tracker = 0
-    for video_name in queue_path.keys():
+    for video_name in jaad_db.keys():
         t0 = time.time()
         # set required paths
-        image_dir = IMG_DIR / video_name
-        metadata_filepath = OP_PROCESSING_DIR / video_name / BBOX_METADATA_FILENAME
-    
+        image_dir = Path(jaad_obj._images_path) / video_name
         # if image_dir doesnt exist, create it
         Path.mkdir(image_dir, exist_ok=True, parents=True)    
         
-        crops_metadata_filepath = OP_PROCESSING_DIR / video_name / CROPS_METADATA_FILENAME
         crops_metadata_dict = dict()
         
-        # if crops metadata file exists, that means thatq the crop images
+        # if crops metadata file exists, that means that the crop images
         # already exists. Don't repeat the process again in that case.
         if os.path.exists(crops_metadata_filepath):
             print(f"\nCrops metadata for {video_name} already exists, skipping process")
         else:
-            get_frames(JAAD_CLIPS_DIR, video_name, image_dir)
+            get_frames(jaad_obj._clips_path, video_name, image_dir)
             with open(metadata_filepath, "r") as f:
                 data = json.load(f)
 
@@ -173,6 +67,7 @@ def get_and_crop_images(queue_range=346):
                 frames = list(data[track].keys())
 
                 # for each frame theres an image, let's get the image full path for the frame and crop it using the bbox, save it
+                # TODO read crop box coordinates from jaad_database
                 for frame in frames:
                     print(frame, end='\r', flush=True)
                     frame_filename = str(frame).zfill(IMG_NAME_ZERO_PADDING) + ".png"
@@ -218,19 +113,11 @@ def get_and_crop_images(queue_range=346):
         print("Time remaining: ", mean_time * (len(queue_path) - counter), " seconds")
         print("Processed ", counter, " out of ", len(queue_path), " videos")
         print("\n")
-def get_crop_paths():
-    return glob.glob(str(OP_PROCESSING_DIR / "video*" / CROPPED_DIR / "*"))    
-
-def get_data_from_path(path):
-        split_1 = path.split(str(OP_PROCESSING_DIR))[1]
-        [_, video_name, _, track] = split_1.split("/")
-        return video_name, track
 
 def infer_clip(openpose_root_dir, output_dir_path, selected_videos, opt_flags):
     """%cd ../../openpose/
     
         !./build/examples/openpose/openpose.bin --image_dir ../pedestrians/openpose_processing/video_0001/cropped/0_1_2b --write_json ../pedestrians/openpose_processing/video_0001/output/json --write_images ../pedestrians/openpose_processing/video_0001/output/images --display 0 
-
     """
     def build_command(path_to_clip_as_image_folder, flags):
         full_command_list = list()
