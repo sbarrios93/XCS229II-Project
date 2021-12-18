@@ -240,7 +240,7 @@ class JaadDatabase:
         if not os.path.exists(self.keypoint_path):
             print(f"Keypoint directory {self.keypoint_path} does not exist.")
             print("Creating keypoint directory...")
-            Path.mkdir(self.keypoint_path, parents=True, exist_ok=True)
+            Path.mkdir(Path(self.keypoint_path), parents=True, exist_ok=True)
             
 
         # for each video in the database, add the keypoints to the database
