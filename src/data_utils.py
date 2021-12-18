@@ -5,6 +5,7 @@ import numpy as np
 import yaml
 import json
 import glob
+from pathlib import Path
 
 
 class JaadDatabase:
@@ -237,7 +238,10 @@ class JaadDatabase:
         # build keypoint_path, if it doesn't exist, throw an error
         self.keypoint_path = os.path.join(self.processed_dirpath, keypoint_dir)
         if not os.path.exists(self.keypoint_path):
-            raise FileNotFoundError(self.keypoint_path)
+            print(f"Keypoint directory {self.keypoint_path} does not exist.")
+            print("Creating keypoint directory...")
+            Path.mkdir(self.keypoint_path, parents=True, exist_ok=True)
+            
 
         # for each video in the database, add the keypoints to the database
         for video_name in self.db:

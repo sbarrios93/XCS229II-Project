@@ -54,14 +54,3 @@ fi
 mkdir -p app
 cd app
 
-# Clone openpose
-echo ":::Cloning openpose"
-git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git
-
-# Clone JAAD
-echo ":::Cloning JAAD"
-git clone https://github.com/ykotseruba/JAAD.git jaad && cd jaad
-
-echo ":::Download JAAD Clips"
-chmod +x download_clips.sh
-./download_clips.sh
