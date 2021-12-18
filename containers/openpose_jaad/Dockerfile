@@ -77,4 +77,5 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /root/pedestrians
 RUN source /root/.bashrc && \
     conda create -y -n pedestrians python=$PYTHON_VERSION pathlib pyyaml opencv scikit-learn && \
-    mv /root/app/jaad/ /root/pedestrians/data
+    mkdir -p /root/pedestrians/data/jaad && \
+    mv /root/app/jaad/ /root/pedestrians/data/jaad
