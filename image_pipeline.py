@@ -11,8 +11,11 @@ jaad_db.run_database_generator()
 
 jaad_db.add_cropped_bbox()
 
+jaad_db.append_keypoints()
+
 # %%
 pipeline = skeleton_pipeline.SkeletonPipeline(jaad_db)
 pipeline.prepare_images()
 
 # %%
+jaad_db.append_keypoints()

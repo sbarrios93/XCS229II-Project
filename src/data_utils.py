@@ -242,12 +242,13 @@ class JaadDatabase:
         # for each video in the database, add the keypoints to the database
         for video_name in self.db:
             for pid in self.db[video_name]["ped_annotations"]:
-                video_keypoint_filepath = os.path.join(self.keypoint_path, video_name, pid)
+                video_keypoint_filepath = os.path.join(self.keypoint_path,video_name, "json" , pid)
                 if "b" not in pid:
                     continue
                 if not os.path.exists(video_keypoint_filepath):
-                    raise FileNotFoundError(video_keypoint_filepath)
-                
+                    # raise FileNotFoundError(video_keypoint_filepath)
+                    print(f"{video_keypoint_filepath} does not exist.")
+                    continue
                 processed_keypoints = []
                 
                 # get all the keypoint files in the directory
