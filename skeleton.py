@@ -1,4 +1,4 @@
-from src import skeleton_pipeline
+from src import _depr_skeleton_pipeline
 import yaml
 import argparse
 import os
@@ -28,10 +28,10 @@ with open('flags.yaml', 'r') as f:
 def run_pipeline(openpose_dir = args.openpose_dir, output_dir = args.output_dir,skip_annotations=args.skip_annotations, skip_cropping=args.skip_cropping, selected_videos=selected_videos, opt_flags=opt_flags):
 
     if not skip_annotations:
-        skeleton_pipeline.get_annotations()
+        _depr_skeleton_pipeline.get_annotations()
     if not skip_cropping:
-        skeleton_pipeline.get_and_crop_images()
-    skeleton_pipeline.infer_clip(openpose_dir, output_dir, selected_videos, opt_flags)
+        _depr_skeleton_pipeline.get_and_crop_images()
+    _depr_skeleton_pipeline.infer_clip(openpose_dir, output_dir, selected_videos, opt_flags)
 
 if __name__ == '__main__':
     run_pipeline()

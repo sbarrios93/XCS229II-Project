@@ -1,176 +1,252 @@
-
-import glob
-import json
 import os
 import shutil
 import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import time
-
-import src.frame_extract as frame_extract
-from unicodedata import name
+import os
+from src import frame_extract
+import yaml
 
 import cv2
 
-# TODO: adapt to new annotation database.
 
-# padding of leading zeros on video names
-VIDEO_NAME_ZERO_PADDING = 4
-# padding of leading zeros on static images names
-IMG_NAME_ZERO_PADDING = 5
-# Static Paths
-ROOT_DIR = Path(".").parent.resolve()
-# Video prefix
-VIDEO_PREFIX = "video_"
-# Directory of cropped images
-CROPPED_DIR = "cropped"
-# how much padding (%) to leave around bounding box when cropping images
-BORDER_PADDING = 0.3
+class SkeletonPipeline:
+    def __init__(self, jaad_db, **opts):
+        self.jaad_db = jaad_db
+        self.jaad_object = jaad_db.jaad_object
+        self.opts = opts
 
-def get_frames(video_dirpath, video_name, output_dir_path):
-    video_path = str(video_dirpath / video_name) + ".mp4"
-    frame_extract.video_to_frames(video_path=video_path, frames_dir=output_dir_path, overwrite=True, every=1, chunk_size=50)
+        self._clips_paths = Path(self.jaad_object._clips_path)
+        self._images_path = Path(self.jaad_object._images_path)
+        self._jaad_path = Path(self.jaad_object._jaad_path)
+        self._processed_dirpath = Path(self.jaad_db.processed_dirpath)
 
-def get_and_crop_images(jaad_db, jaad_obj):
-    
-    
-    
-    counter = 0
-    time_tracker = 0
-    for video_name in jaad_db.keys():
-        t0 = time.time()
-        # set required paths
-        image_dir = Path(jaad_obj._images_path) / video_name
-        # if image_dir doesnt exist, create it
-        Path.mkdir(image_dir, exist_ok=True, parents=True)    
-        
-        crops_metadata_dict = dict()
-        
-        # if crops metadata file exists, that means that the crop images
-        # already exists. Don't repeat the process again in that case.
-        if os.path.exists(crops_metadata_filepath):
-            print(f"\nCrops metadata for {video_name} already exists, skipping process")
-        else:
-            get_frames(jaad_obj._clips_path, video_name, image_dir)
-            with open(metadata_filepath, "r") as f:
-                data = json.load(f)
+        # Load Config File
+        self.config_file = "config.yaml"
+        self.config_path = Path.absolute(Path(self.config_file))
+        self.config = yaml.load(self.config_path.read_text(), Loader=yaml.SafeLoader)
+        self.root_path = Path.absolute(Path("."))
 
-            tracks = list(data.keys())
+        self.params = dict(
+            video_name_zero_padding=4,
+            img_name_zero_padding=5,
+            video_prefix="video_",
+            cropped_folder_name="cropped",
+            keypoints_folder_name="keypoints",
+            openpose_dir=None,
+        )
+        assert all(k in self.params for k in self.opts.keys()), "Wrong option(s)."
+        self.params.update(self.opts)
+        self.params.update(self.config)
 
-            for track in tracks:
-                crops_metadata_dict[track] = dict()
-                # DIR to save cropped images
-                cropped_im_dir = OP_PROCESSING_DIR / video_name / CROPPED_DIR / track
-                Path.mkdir(cropped_im_dir, exist_ok=True, parents=True)
+        assert self.params["openpose_dir"] is not None, "Openpose directory not specified."
 
-                frames = list(data[track].keys())
+    def extract_frames(self, video_name, output_dir_path):
+        video_dirpath = self._clips_paths
+        video_path = str(video_dirpath / video_name) + ".mp4"
+        frame_extract.video_to_frames(
+            video_path=video_path, frames_dir=output_dir_path, overwrite=True, every=1, chunk_size=50
+        )
 
-                # for each frame theres an image, let's get the image full path for the frame and crop it using the bbox, save it
-                # TODO read crop box coordinates from jaad_database
-                for frame in frames:
-                    print(frame, end='\r', flush=True)
-                    frame_filename = str(frame).zfill(IMG_NAME_ZERO_PADDING) + ".png"
-                    frame_filepath = image_dir / frame_filename
+    def _get_num_frames(self, video_name):
+        return self.jaad_db.db[video_name]["num_frames"]
 
-                    frame_data = data[track][frame]
+    def _get_crop_path(self, video_name, pid):
+        return Path(self._processed_dirpath) / self.params["cropped_folder_name"] / video_name / pid
 
-                    img = cv2.imread(str(frame_filepath))
+    def _get_single_video_images_path(self, video_name):
+        return Path(self._images_path) / video_name
 
-                    (left, top, right, bottom) = (
-                        int(float(frame_data["xtl"])),
-                        int(float(frame_data["ytl"])),
-                        int(float(frame_data["xbr"])),
-                        int(float(frame_data["ybr"])),
-                    )
+    def _get_keypoints_path(self, video_name, pid, type_):
+        if type_ == "image":
+            return self._processed_dirpath / self.params["keypoints_folder_name"] / video_name / "images" / pid
+        elif type_ == "json":
+            return self._processed_dirpath / self.params["keypoints_folder_name"] / video_name / "json" / pid
 
-                    left = max(0, left - int(BORDER_PADDING * (right - left)))
-                    right = min(1920, right + int(BORDER_PADDING * (right - left)))
-                    top = max(0, top - int(BORDER_PADDING * (bottom - top)))
-                    bottom = min(1080, bottom + int(BORDER_PADDING * (bottom - top)))
+    def _run_crop_pipeline(self, video_name, pid):
+        frames_path = self._get_single_video_images_path(video_name)
+        cropped_path = self._get_crop_path(video_name, pid)
 
-                    crops_metadata_dict[track][frame] = {"left": left, "top": top, "right": right, "bottom": bottom}
+        assert Path.exists(frames_path), f"Frames path for video {video_name} does not exist."
 
-                    # crop image
-                    cropped_img = img[top:bottom, left:right]
-                    (height, width, filters) = cropped_img.shape
+        # for easier access
+        ped_annotations = self.jaad_db.db[video_name]["ped_annotations"]
+        frames = ped_annotations[pid]["frames"]
+        cropped_boxes = ped_annotations[pid]["cropped_box"]
 
-                    cv2.imwrite(str(cropped_im_dir / f"{int(frame):0{IMG_NAME_ZERO_PADDING}d}.png"), cropped_img)
-            print('\n')
-            # delete folder with all the full images to save space
-            shutil.rmtree(str(image_dir), ignore_errors=True)
-            
-            
-            with open(crops_metadata_filepath, "w") as f:
-                json.dump(crops_metadata_dict, f, indent=4)
-            
-        counter += 1
-        time_diff = time.time() - t0
-        time_tracker += time_diff
-        mean_time = time_tracker / counter
+        for frame in frames:
+            frame_ix = frames.index(frame)
+            print("Cropping frame {} of {}".format(frame, pid), end="\r", flush=True)
+
+            frame_filename = str(frame).zfill(self.params["img_name_zero_padding"]) + ".png"
+            frame_filepath = frames_path / frame_filename
+            cropped_filepath = cropped_path / frame_filename
+
+            img = cv2.imread(str(frame_filepath))
+
+            [left, top, right, bottom] = cropped_boxes[frame_ix]
+
+            cropped_img = img[top:bottom, left:right]
+            cv2.imwrite(str(cropped_filepath), cropped_img)
+
         print("\n")
-        print("Elapsed time: ", time_diff, " seconds")
-        print("Time remaining: ", mean_time * (len(queue_path) - counter), " seconds")
-        print("Processed ", counter, " out of ", len(queue_path), " videos")
-        print("\n")
+        return None
 
-def infer_clip(openpose_root_dir, output_dir_path, selected_videos, opt_flags):
-    """%cd ../../openpose/
-    
-        !./build/examples/openpose/openpose.bin --image_dir ../pedestrians/openpose_processing/video_0001/cropped/0_1_2b --write_json ../pedestrians/openpose_processing/video_0001/output/json --write_images ../pedestrians/openpose_processing/video_0001/output/images --display 0 
-    """
-    def build_command(path_to_clip_as_image_folder, flags):
+    def _build_openpose_command(self, flags):
         full_command_list = list()
-        
-        # path to executable
-        bin_path_execute = "./build/examples/openpose/openpose.bin"
+
+        # executable
+        bin_path_execute = "./build/examples/openpose/openpose.bin"  # path to executable
         full_command_list.append(bin_path_execute)
-        
-        # flags to pass to command
-        image_args =  ["--image_dir", path_to_clip_as_image_folder]
-        
-        # add image_args to full_command_list
-        full_command_list += image_args
-        
+
         # add flags
         for flag, value in flags.items():
-
             if value != None:
                 full_command_list += ["--" + flag, value]
             else:
                 full_command_list += ["--" + flag]
-        
         return full_command_list
-    
-    def run_command(opt_flags=opt_flags, selected_videos=selected_videos):
-        paths = get_crop_paths()
-        
-        os.chdir(openpose_root_dir)
-        
-        for path in paths:
-            video_name, track = get_data_from_path(path)
-            if video_name in selected_videos:
-            
-                built_in_flags = {
-                    "write_json": output_dir_path + "/json/" + video_name + "/" + track,
-                    "write_images": output_dir_path + "/images/" + video_name + "/" + track,
-                }    
-                
-                Path.mkdir(Path(built_in_flags["write_json"]), exist_ok=True, parents=True)
-                Path.mkdir(Path(built_in_flags["write_images"]), exist_ok=True, parents=True)
-                
-                
-                flags = {**built_in_flags, **opt_flags}
-                print(f"Inferring {video_name}")
-                command_list = build_command(path, flags)
-                print("Commands:", command_list)
-                subprocess.run(command_list)
-                print(f"Inferred {video_name}")
+
+    def _load_opt_flags(self):
+        # load flags from flags.yaml
+        opt_flags_path = Path(self.root_path) / "flags.yaml"
+        assert Path.exists(opt_flags_path), "flags.yaml not found."
+        return yaml.load(opt_flags_path.read_text(), Loader=yaml.SafeLoader)
+
+    def _run_inference_pipeline(self, video_name, pid):
+        cropped_image_dir = self._get_crop_path(video_name, pid)
+
+        built_in_flags = {
+            "image_dir": str(Path.absolute(cropped_image_dir)),
+            "write_json": str(Path.absolute(self._get_keypoints_path(video_name, pid, "json"))),
+            "write_images": str(Path.absolute(self._get_keypoints_path(video_name, pid, "image"))),
+        }
+
+        Path.mkdir(Path(built_in_flags["write_json"]), exist_ok=True, parents=True)
+        Path.mkdir(Path(built_in_flags["write_images"]), exist_ok=True, parents=True)
+
+        opt_flags = self._load_opt_flags()
+
+        all_flags = {**built_in_flags, **opt_flags}
+        command_list = self._build_openpose_command(flags=all_flags)
+        print("Commands:", command_list)
+        os.chdir(self.params["openpose_dir"])
+        subprocess.run(command_list)
+        os.chdir(self.root_path)
+        print(f"Inferred {video_name}")
+        return None
+
+    def _run_extraction_pipeline(self, video_image_dir, video_name):
+        # Check if we already have the extracted frames or we need to extract them
+        # if image_dir doesnt exist, create it, extract frames
+        if not video_image_dir.exists:
+            print("Extracting frames for video {}".format(video_name))
+            Path.mkdir(video_image_dir, exist_ok=True, parents=True)
+            self.extract_frames(video_name, video_image_dir)
+        else:
+            # if image_dir exists, check if we have the correct number of frames in it
+            # get length of frames for video
+            frame_count = self._get_num_frames(video_name)
+            # get number of frames already in folder
+            frame_count_in_folder = len(list(Path(video_image_dir).rglob("*.png")))
+            if frame_count > frame_count_in_folder:
+                print("Frames for video {} are missing. Extracting frames.".format(video_name))
+                shutil.rmtree(video_image_dir, ignore_errors=False, onerror=None)
+                Path.mkdir(video_image_dir, exist_ok=True, parents=True)
+                self.extract_frames(video_name, video_image_dir)
             else:
-                print("Skipping ", video_name)
-    
-    run_command()
-        
-    
-    
-    
+                print("Frames for video {} are already extracted.".format(video_name))
+        return None
+
+    def _single_video_pipeline_constructor(self, video_name, **opts):
+
+        params = {"cropping": True, "keypoints": True, "force": True}
+        assert all(k in params for k in opts.keys()), "Wrong option(s)."
+        params.update(opts)
+
+        video_pipeline = {"inf": {}, "crop": {}, "ext": False}
+
+        # set variable for easier access
+        ped_annotations_dict = self.jaad_db.db[video_name]["ped_annotations"]
+
+        for pid in ped_annotations_dict.keys():
+
+            video_pipeline["inf"][pid] = False
+            video_pipeline["crop"][pid] = False
+
+            if "b" in pid:  # only do this on pedestrians with annotations (string ending in b)
+
+                # SECTION KEYPOINTS
+                if params["keypoints"]:  # are we supposed to run the keypoints pipeline?
+                    if (len(ped_annotations_dict[pid].get("skeleton_keypoints", [])) < 10) or (
+                        params["force"]
+                    ):  # do we have less than 10 keypoints? or are we forced to run?
+                        video_pipeline["inf"][pid] = True
+                #!SECTION
+
+        pid_to_infer = [k for k, v in video_pipeline["inf"].items() if v]  # get list of pids that need to be inferred
+
+        for pid in pid_to_infer:
+            # SECTION CROPPING
+            if params["cropping"]:  # are we supposed to run the cropping pipeline?
+                cropped_path = self._get_crop_path(video_name, pid)
+                if not cropped_path.exists():  # are we missing the cropped images?
+                    Path.mkdir(cropped_path, parents=True, exist_ok=True)
+                    video_pipeline["crop"][pid] = True
+                else:
+                    num_crop_boxes = len(list(cropped_path.rglob("*.png")))
+                    if (num_crop_boxes < 10) or (
+                        params["force"]
+                    ):  # do we have less than 10 cropped boxes? or are we forced to run?
+                        video_pipeline["crop"][pid] = True
+            # !SECTION
+            if video_pipeline["crop"][pid]:
+                video_pipeline["ext"] = True
+
+        return video_pipeline
+
+    def prepare_images(self, run_cropping=True, run_keypoints=True, force=False):
+
+        params = {"cropping": run_cropping, "keypoints": run_keypoints, "force": force}
+
+        print("Preparing images with the following parameters:")
+        for item in params.items():
+            print(item)
+
+        # if we passed skip_cropping as false, we must have the cropped bounding boxes
+        if run_cropping:
+            assert (
+                self.jaad_db.cropped_run == True
+            ), "Can't crop images, cropped bounding boxes have not been extracted. Please run `add_cropped_box` first."
+
+        counter = 0
+        time_tracker = 0
+        for video_name in self.jaad_db.db.keys():
+            t0 = time.time()  # start timer
+            # set required paths
+            video_image_dir = Path(self._images_path) / video_name
+
+            video_pipeline = self._single_video_pipeline_constructor(video_name, **params)
+
+            crop_pid_list = [k for k, v in video_pipeline["crop"].items() if v]
+            infer_pid_list = [k for k, v in video_pipeline["inf"].items() if v]
+
+            if video_pipeline["ext"]:
+                self._run_extraction_pipeline(video_image_dir, video_name)
+            else:
+                print("Extraction for video {} not required.".format(video_name))
+            for pid in crop_pid_list:
+                self._run_crop_pipeline(video_name, pid)
+            for pid in infer_pid_list:
+                self._run_inference_pipeline(video_name, pid)
+            counter += 1
+            time_diff = time.time() - t0
+            time_tracker += time_diff
+            mean_time = time_tracker / counter
+            video_queue_length = len(self.jaad_db.db.keys())
+            print("\n")
+            print("Elapsed time: ", time_diff, " seconds")
+            print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
+            print("Processed ", counter, " out of ", video_queue_length, " videos")
+            print("\n")
