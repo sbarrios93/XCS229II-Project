@@ -1,4 +1,4 @@
-
+.vscode 
 # avoid media files from dataset
 data/**/*.mp4
 data/**/*.json
