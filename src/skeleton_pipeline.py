@@ -140,7 +140,7 @@ class SkeletonPipeline:
     def _run_extraction_pipeline(self, video_image_dir, video_name):
         # Check if we already have the extracted frames or we need to extract them
         # if image_dir doesnt exist, create it, extract frames
-        if not video_image_dir.exists:
+        if not video_image_dir.exists():
             print("Extracting frames for video {}".format(video_name))
             Path.mkdir(video_image_dir, exist_ok=True, parents=True)
             self.extract_frames(video_name, video_image_dir)
