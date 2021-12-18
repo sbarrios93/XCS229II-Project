@@ -35,7 +35,18 @@ if [[ $SKIP_NVIDIA_DOCKER == false ]]; then
     # install nvidia-docker2
     apt-get update && apt-get install -y --no-install-recommends nvidia-docker2
 
+    sudo tee /etc/docker/daemon.json <<EOF
+    {
+        "runtimes": {
+            "nvidia": {
+                "path": "/usr/bin/nvidia-container-runtime",
+                "runtimeArgs": []
+            }
+        }
+    }
+EOF
     # restart docker
+    sudo pkill -SIGHUP dockerd
     systemctl restart docker
 fi
 
