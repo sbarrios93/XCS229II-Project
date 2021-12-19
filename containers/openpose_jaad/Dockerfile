@@ -78,5 +78,5 @@ WORKDIR /root/pedestrians
 RUN source ~/.bashrc && \
     conda create -y -n pedestrians python=$PYTHON_VERSION pathlib pyyaml opencv scikit-learn && \
     mkdir -p /root/pedestrians/data/jaad && \
-    mv /root/app/jaad /root/pedestrians/data/jaad && \
+    mv /root/app/jaad/ /root/pedestrians/data/jaad && \
     echo "openpose_dir: /root/app/openpose" > /root/pedestrians/config.yaml
