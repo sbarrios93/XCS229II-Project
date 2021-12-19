@@ -5,6 +5,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 import time
 import os
+
+from importlib_metadata import itertools
 from src import frame_extract
 import yaml
 
@@ -40,9 +42,7 @@ class SkeletonPipeline:
         self.params.update(self.opts)
         self.params.update(self.config)
 
-        assert (
-            self.params["openpose_dir"] is not None
-        ), "Openpose directory not specified."
+        assert self.params["openpose_dir"] is not None, "Openpose directory not specified."
 
     def extract_frames(self, video_name, output_dir_path):
         video_dirpath = self._clips_paths
@@ -59,41 +59,22 @@ class SkeletonPipeline:
         return self.jaad_db.db[video_name]["num_frames"]
 
     def _get_crop_path(self, video_name, pid):
-        return (
-            Path(self._processed_dirpath)
-            / self.params["cropped_folder_name"]
-            / video_name
-            / pid
-        )
+        return Path(self._processed_dirpath) / self.params["cropped_folder_name"] / video_name / pid
 
     def _get_single_video_images_path(self, video_name):
         return Path(self._images_path) / video_name
 
     def _get_keypoints_path(self, video_name, pid, type_):
         if type_ == "image":
-            return (
-                self._processed_dirpath
-                / self.params["keypoints_folder_name"]
-                / video_name
-                / "images"
-                / pid
-            )
+            return self._processed_dirpath / self.params["keypoints_folder_name"] / video_name / "images" / pid
         elif type_ == "json":
-            return (
-                self._processed_dirpath
-                / self.params["keypoints_folder_name"]
-                / video_name
-                / "json"
-                / pid
-            )
+            return self._processed_dirpath / self.params["keypoints_folder_name"] / video_name / "json" / pid
 
     def _run_crop_pipeline(self, video_name, pid):
         frames_path = self._get_single_video_images_path(video_name)
         cropped_path = self._get_crop_path(video_name, pid)
 
-        assert Path.exists(
-            frames_path
-        ), f"Frames path for video {video_name} does not exist."
+        assert Path.exists(frames_path), f"Frames path for video {video_name} does not exist."
 
         # for easier access
         ped_annotations = self.jaad_db.db[video_name]["ped_annotations"]
@@ -104,9 +85,7 @@ class SkeletonPipeline:
             frame_ix = frames.index(frame)
             print("Cropping frame {} of {}".format(frame, pid), end="\r", flush=True)
 
-            frame_filename = (
-                str(frame).zfill(self.params["img_name_zero_padding"]) + ".png"
-            )
+            frame_filename = str(frame).zfill(self.params["img_name_zero_padding"]) + ".png"
             frame_filepath = frames_path / frame_filename
             cropped_filepath = cropped_path / frame_filename
 
@@ -124,9 +103,7 @@ class SkeletonPipeline:
         full_command_list = list()
 
         # executable
-        bin_path_execute = (
-            "./build/examples/openpose/openpose.bin"  # path to executable
-        )
+        bin_path_execute = "./build/examples/openpose/openpose.bin"  # path to executable
         full_command_list.append(bin_path_execute)
 
         # add flags
@@ -143,17 +120,29 @@ class SkeletonPipeline:
         assert Path.exists(opt_flags_path), "flags.yaml not found."
         return yaml.load(opt_flags_path.read_text(), Loader=yaml.SafeLoader)
 
-    def _run_inference_pipeline(self, video_name, pid):
+    def _cropped_image_loader(self, cropped_image_dir, temp_folder="temp"):
+        cropped_images = cropped_image_dir.glob("*.png")
+
+        Path.mkdir(cropped_image_dir / temp_folder, parents=True, exist_ok=True)
+
+        while True:
+            files = list(itertools.islice(cropped_images, 20))
+            if not files:
+                break
+            for file in files:
+                shutil.copy(str(file), str(cropped_image_dir / temp_folder))
+
+    def _run_inference_pipeline(self, video_name, pid, temp_folder="temp"):
         cropped_image_dir = self._get_crop_path(video_name, pid)
+        temp_image_dir = cropped_image_dir / temp_folder
+        Path.mkdir(temp_image_dir, parents=True, exist_ok=True)
+
+        cropped_images = cropped_image_dir.glob("*.png")
 
         built_in_flags = {
-            "image_dir": str(Path.absolute(cropped_image_dir)),
-            "write_json": str(
-                Path.absolute(self._get_keypoints_path(video_name, pid, "json"))
-            ),
-            "write_images": str(
-                Path.absolute(self._get_keypoints_path(video_name, pid, "image"))
-            ),
+            "image_dir": str(Path.absolute(temp_image_dir)),
+            "write_json": str(Path.absolute(self._get_keypoints_path(video_name, pid, "json"))),
+            "write_images": str(Path.absolute(self._get_keypoints_path(video_name, pid, "image"))),
         }
 
         Path.mkdir(Path(built_in_flags["write_json"]), exist_ok=True, parents=True)
@@ -164,11 +153,18 @@ class SkeletonPipeline:
         all_flags = {**built_in_flags, **opt_flags}
         command_list = self._build_openpose_command(flags=all_flags)
         print("Commands:", command_list)
-        os.chdir(self.params["openpose_dir"])
-        subprocess.run(command_list)
-        os.chdir(self.root_path)
-        print(f"Inferred {video_name}")
-        return None
+        while True:
+            files = list(itertools.islice(cropped_images, 20))
+            if not files:
+                print(f"Inferred {video_name}")
+                return None
+            for file in files:
+                shutil.copy(str(file), str(cropped_image_dir / temp_folder))
+            os.chdir(self.params["openpose_dir"])
+            subprocess.run(command_list)
+            os.chdir(self.root_path)
+            for f in files:
+                os.remove(str(temp_image_dir / f.name))
 
     def _run_extraction_pipeline(self, video_image_dir, video_name):
         # Check if we already have the extracted frames or we need to extract them
@@ -184,11 +180,7 @@ class SkeletonPipeline:
             # get number of frames already in folder
             frame_count_in_folder = len(list(Path(video_image_dir).rglob("*.png")))
             if frame_count > frame_count_in_folder:
-                print(
-                    "Frames for video {} are missing. Extracting frames.".format(
-                        video_name
-                    )
-                )
+                print("Frames for video {} are missing. Extracting frames.".format(video_name))
                 shutil.rmtree(video_image_dir, ignore_errors=False, onerror=None)
                 Path.mkdir(video_image_dir, exist_ok=True, parents=True)
                 self.extract_frames(video_name, video_image_dir)
@@ -212,26 +204,17 @@ class SkeletonPipeline:
             video_pipeline["inf"][pid] = False
             video_pipeline["crop"][pid] = False
 
-            if (
-                "b" in pid
-            ):  # only do this on pedestrians with annotations (string ending in b)
+            if "b" in pid:  # only do this on pedestrians with annotations (string ending in b)
 
                 # SECTION KEYPOINTS
-                if params[
-                    "keypoints"
-                ]:  # are we supposed to run the keypoints pipeline?
-                    if (
-                        len(ped_annotations_dict[pid].get("skeleton_keypoints", []))
-                        < 10
-                    ) or (
+                if params["keypoints"]:  # are we supposed to run the keypoints pipeline?
+                    if (len(ped_annotations_dict[pid].get("skeleton_keypoints", [])) < 10) or (
                         params["force"]
                     ):  # do we have less than 10 keypoints? or are we forced to run?
                         video_pipeline["inf"][pid] = True
                 #!SECTION
 
-        pid_to_infer = [
-            k for k, v in video_pipeline["inf"].items() if v
-        ]  # get list of pids that need to be inferred
+        pid_to_infer = [k for k, v in video_pipeline["inf"].items() if v]  # get list of pids that need to be inferred
 
         for pid in pid_to_infer:
             # SECTION CROPPING
@@ -273,9 +256,7 @@ class SkeletonPipeline:
             # set required paths
             video_image_dir = Path(self._images_path) / video_name
 
-            video_pipeline = self._single_video_pipeline_constructor(
-                video_name, **params
-            )
+            video_pipeline = self._single_video_pipeline_constructor(video_name, **params)
 
             crop_pid_list = [k for k, v in video_pipeline["crop"].items() if v]
             infer_pid_list = [k for k, v in video_pipeline["inf"].items() if v]
@@ -295,8 +276,6 @@ class SkeletonPipeline:
             video_queue_length = len(self.jaad_db.db.keys())
             print("\n")
             print("Elapsed time: ", time_diff, " seconds")
-            print(
-                "Time remaining: ", mean_time * video_queue_length - counter, " seconds"
-            )
+            print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
             print("Processed ", counter, " out of ", video_queue_length, " videos")
             print("\n")
