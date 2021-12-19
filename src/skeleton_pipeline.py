@@ -6,7 +6,7 @@ from pathlib import Path
 import time
 import os
 
-from importlib_metadata import itertools
+import itertools
 from src import frame_extract
 import yaml
 
