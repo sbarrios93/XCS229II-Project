@@ -120,17 +120,6 @@ class SkeletonPipeline:
         assert Path.exists(opt_flags_path), "flags.yaml not found."
         return yaml.load(opt_flags_path.read_text(), Loader=yaml.SafeLoader)
 
-    def _cropped_image_loader(self, cropped_image_dir, temp_folder="temp"):
-        cropped_images = cropped_image_dir.glob("*.png")
-
-        Path.mkdir(cropped_image_dir / temp_folder, parents=True, exist_ok=True)
-
-        while True:
-            files = list(itertools.islice(cropped_images, 20))
-            if not files:
-                break
-            for file in files:
-                shutil.copy(str(file), str(cropped_image_dir / temp_folder))
 
     def _run_inference_pipeline(self, video_name, pid, temp_folder="temp"):
         cropped_image_dir = self._get_crop_path(video_name, pid)
@@ -154,7 +143,7 @@ class SkeletonPipeline:
         command_list = self._build_openpose_command(flags=all_flags)
         print("Commands:", command_list)
         while True:
-            files = list(itertools.islice(cropped_images))
+            files = list(itertools.islice(cropped_images, 100))
             if not files:
                 print(f"Inferred {video_name}")
                 shutil.rmtree(str(temp_image_dir))
