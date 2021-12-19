@@ -157,6 +157,7 @@ class SkeletonPipeline:
             files = list(itertools.islice(cropped_images))
             if not files:
                 print(f"Inferred {video_name}")
+                shutil.rmtree(str(temp_image_dir))
                 return None
             for file in files:
                 shutil.copy(str(file), str(cropped_image_dir / temp_folder))
@@ -165,7 +166,6 @@ class SkeletonPipeline:
             os.chdir(self.root_path)
             for f in files:
                 os.remove(str(temp_image_dir / f.name))
-        shutil.rmtree(str(temp_image_dir))
 
     def _run_extraction_pipeline(self, video_image_dir, video_name):
         # Check if we already have the extracted frames or we need to extract them
