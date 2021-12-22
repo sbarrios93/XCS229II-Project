@@ -93,7 +93,6 @@ class JaadDatabase:
         if not self.cropped_run:
             print("Cropped box not added to database, running add_cropped_bbox() first.")
             self.add_cropped_bbox()
-
         if return_type == "array":
             return np.array(self.db[video_name]["ped_annotations"][pid]["cropped_box"])
         elif return_type == "list":
@@ -240,7 +239,6 @@ class JaadDatabase:
 
         # check that the key 'people' exists in the json file
         assert people_key in content, f"Key {people_key} does not exist in the json file."
-
         # if we didn't pass an integer as frame id, then we need to get it from the file name
         if frame_id is None:
             frame_id = int(video_keypoint_filepath.split("/")[-1].split("_")[0])
@@ -253,7 +251,6 @@ class JaadDatabase:
 
         # let's check if there's one more than one skeleton per person
         skeleton_count = len(content[people_key])
-
         # get all cropped_boxes
         cropped_boxes = self._get_cropped_box(video_name, pid, return_type="array")
 
@@ -263,7 +260,6 @@ class JaadDatabase:
             skeleton_array = np.array(content[people_key][0][keypoints_subkey])
             # run the _calculate_keypoints function
             return self._calculate_keypoints(cropped_boxes[frame_ix], skeleton_array)
-
         elif skeleton_count > 1:
             bboxes = self._get_bbox(video_name, pid, return_type="array")
             skeleton_candidates = []
@@ -302,7 +298,6 @@ class JaadDatabase:
                     print(f"{video_keypoint_filepath} does not exist.")
                     continue
                 processed_keypoints = []
-
                 # get all the keypoint files in the directory
                 keypoint_files = glob.glob(video_keypoint_filepath + "/*.json")
                 # sort the keypoint files by frame id
