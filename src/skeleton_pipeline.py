@@ -97,6 +97,9 @@ class SkeletonPipeline:
             cv2.imwrite(str(cropped_filepath), cropped_img)
 
         print("\n")
+        shutil.rmtree(frames_path)
+        if not os.path.exists(frames_path):
+            print("Removed frames path for video {}".format(video_name))
         return None
 
     def _build_openpose_command(self, flags):
