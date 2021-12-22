@@ -4,6 +4,7 @@ data/**/*.mp4
 data/**/*.json
 data/**/*.png
 data/**/*.xml
+data/**/*.pkl
 openpose_processing
 
 # no pickle files
