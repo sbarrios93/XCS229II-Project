@@ -241,31 +241,33 @@ class SkeletonPipeline:
 
         counter = 0
         time_tracker = 0
+        skipped_videos = [f"{'video_00' + str(i)}" for i in range(61, 71)] # this videos have a format 120x720. that make openpose crash with our current config
         for video_name in self.jaad_db.db.keys():
-            t0 = time.time()  # start timer
-            # set required paths
-            video_image_dir = Path(self._images_path) / video_name
+            if video_name not in skipped_videos: # skip videos that have a format 120x720
+                t0 = time.time()  # start timer
+                # set required paths
+                video_image_dir = Path(self._images_path) / video_name
 
-            video_pipeline = self._single_video_pipeline_constructor(video_name, **params)
+                video_pipeline = self._single_video_pipeline_constructor(video_name, **params)
 
-            crop_pid_list = [k for k, v in video_pipeline["crop"].items() if v]
-            infer_pid_list = [k for k, v in video_pipeline["inf"].items() if v]
+                crop_pid_list = [k for k, v in video_pipeline["crop"].items() if v]
+                infer_pid_list = [k for k, v in video_pipeline["inf"].items() if v]
 
-            if video_pipeline["ext"]:
-                self._run_extraction_pipeline(video_image_dir, video_name)
-            else:
-                print("Extraction for video {} not required.".format(video_name))
-            for pid in crop_pid_list:
-                self._run_crop_pipeline(video_name, pid)
-            for pid in infer_pid_list:
-                self._run_inference_pipeline(video_name, pid)
-            counter += 1
-            time_diff = time.time() - t0
-            time_tracker += time_diff
-            mean_time = time_tracker / counter
-            video_queue_length = len(self.jaad_db.db.keys())
-            print("\n")
-            print("Elapsed time: ", time_diff, " seconds")
-            print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
-            print("Processed ", counter, " out of ", video_queue_length, " videos")
-            print("\n")
+                if video_pipeline["ext"]:
+                    self._run_extraction_pipeline(video_image_dir, video_name)
+                else:
+                    print("Extraction for video {} not required.".format(video_name))
+                for pid in crop_pid_list:
+                    self._run_crop_pipeline(video_name, pid)
+                for pid in infer_pid_list:
+                    self._run_inference_pipeline(video_name, pid)
+                counter += 1
+                time_diff = time.time() - t0
+                time_tracker += time_diff
+                mean_time = time_tracker / counter
+                video_queue_length = len(self.jaad_db.db.keys())
+                print("\n")
+                print("Elapsed time: ", time_diff, " seconds")
+                print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
+                print("Processed ", counter, " out of ", video_queue_length, " videos")
+                print("\n")
