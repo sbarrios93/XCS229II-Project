@@ -267,9 +267,9 @@ class SkeletonPipeline:
                 mean_time = time_tracker / counter
                 video_queue_length = len(self.jaad_db.db.keys())
                 print("Deleting image path {}".format(video_image_dir))
-                shutil.rmtree(video_image_dir)
-                if not os.path.exists(video_image_dir):
-                    print("Removed frames path for video {}".format(video_name))
+                while os.path.exists(video_image_dir):
+                    shutil.rmtree(video_image_dir)
+                print("Removed frames path for video {}".format(video_name))
                 print("\n")
                 print("Elapsed time: ", time_diff, " seconds")
                 print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
