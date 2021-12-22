@@ -103,6 +103,12 @@ class BuildSamples(JaadDatabase):
         :param window: The window size to use
         """
 
+        params = {
+            "savgol_window_size": 11,
+            "savgol_polyorder": 3,
+        }
+        params.update(opts)
+
         # unpack dict(image, pid)
         image_list, pid_list, intent = sequence_data["image"], sequence_data["pid"], sequence_data["intent"]
 
@@ -126,7 +132,9 @@ class BuildSamples(JaadDatabase):
         skeletons = self.db[video_name]["ped_annotations"][pid]["skeleton_keypoints"]
 
         # apply savgol filter
-        skeletons = self._apply_savgol_filter(skeletons, window_size=11, polyorder=3)
+        skeletons = self._apply_savgol_filter(
+            skeletons, window_size=params["savgol_window_size"], polyorder=params["savgol_polyorder"]
+        )
 
         array_with_sequences = []
         for array_ix, array in enumerate(
@@ -236,7 +244,12 @@ class BuildSamples(JaadDatabase):
                 "pid": sequence_data["pid"][ith_sample],
                 "intent": sequence_data["intent"][ith_sample],
             }
-            parsed_sample = self._raw_sequence_transformer(sequence_data=sample_data, window=params["min_track_size"])
+            parsed_sample = self._raw_sequence_transformer(
+                sequence_data=sample_data,
+                window=params["min_track_size"],
+                savgol_window_size=params["savgol_window_size"],
+                savgol_polyorder=params["savgol_polyorder"],
+            )
             sequence_dict["sequences"].append(parsed_sample)
             sequence_dict["sequences_count"] += len(parsed_sample)
             for i in parsed_sample:
@@ -287,7 +300,11 @@ class BuildSamples(JaadDatabase):
         # run functions
         sequence_data = self._generate_raw_sequence(image_set, **params)
         parsed_sequences = self._parse_raw_sequence(
-            sequence_data=sequence_data, **params, visualize_inner_func=visualize_inner_func
+            sequence_data=sequence_data,
+            **params,
+            visualize_inner_func=visualize_inner_func,
+            savgoly_window_size=11,
+            savgol_polyorder=3,
         )
         if save:
             with open("data/processed/sample_sequence_dict.pkl", "wb") as file:
@@ -383,9 +400,7 @@ class BodyBuilder:
         )
 
         # Length of leg
-        self.length_leg = np.maximum(
-            self.length_leg_right, self.length_leg_left
-        )
+        self.length_leg = np.maximum(self.length_leg_right, self.length_leg_left)
 
         # Length of body
         self.length_body = self.length_head + self.length_torso + self.length_leg
@@ -396,6 +411,3 @@ class BodyBuilder:
 
 builder = BuildSamples(jaad_object=JAAD("data/jaad"))
 data = builder.generate_sequence_samples()
-A = BodyBuilder(data["sequences"][0][0]["skeleton_sequence"][0])
-A._compute_length_body()
-print(A.length_body)

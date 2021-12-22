@@ -242,6 +242,7 @@ class SkeletonPipeline:
         counter = 0
         time_tracker = 0
         skipped_videos = [f"{'video_00' + str(i)}" for i in range(61, 71)] # this videos have a format 120x720. that make openpose crash with our current config
+        video_queue_length = len(self.jaad_db.db.keys()) - len(skipped_videos)
         for video_name in self.jaad_db.db.keys():
             if video_name not in skipped_videos: # skip videos that have a format 120x720
                 t0 = time.time()  # start timer
@@ -261,17 +262,22 @@ class SkeletonPipeline:
                     self._run_crop_pipeline(video_name, pid)
                 for pid in infer_pid_list:
                     self._run_inference_pipeline(video_name, pid)
-                counter += 1
+
+                if os.path.exists(video_image_dir):
+                    print("Deleting image path {}".format(video_image_dir))
+                    while os.path.exists(video_image_dir):
+                        shutil.rmtree(video_image_dir)
+                    print("Removed frames path for video {}".format(video_name))
+
                 time_diff = time.time() - t0
-                time_tracker += time_diff
-                mean_time = time_tracker / counter
-                video_queue_length = len(self.jaad_db.db.keys())
-                print("Deleting image path {}".format(video_image_dir))
-                while os.path.exists(video_image_dir):
-                    shutil.rmtree(video_image_dir)
-                print("Removed frames path for video {}".format(video_name))
-                print("\n")
-                print("Elapsed time: ", time_diff, " seconds")
-                print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
-                print("Processed ", counter, " out of ", video_queue_length, " videos")
-                print("\n")
+                if time_diff < 10:
+                    video_queue_length -= 1
+                else:
+                    counter += 1
+                    time_tracker += time_diff
+                    mean_time = time_tracker / counter
+                    print("\n")
+                    print("Elapsed time: ", time_diff, " seconds")
+                    print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
+                    print("Processed ", counter, " out of ", video_queue_length, " videos")
+                    print("\n")
