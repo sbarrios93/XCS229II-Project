@@ -24,7 +24,7 @@ jaad_db.append_keypoints()
 
 
 if args.run_inference or RUN_INFERENCE:
-    print("Running inference because", f"{'--run-inference, = True' * args.run_inference}", {'RUN_INFERENCE = True' * RUN_INFERENCE})
+    print("Running inference because", f"{'--run-inference, = True' * args.run_inference}", f"{'RUN_INFERENCE = True' * RUN_INFERENCE}")
     pipeline = skeleton_pipeline.SkeletonPipeline(jaad_db)
     pipeline.prepare_images()
     jaad_db.append_keypoints()

@@ -1,16 +1,16 @@
+import datetime
+import itertools
 import os
 import shutil
 import subprocess
+import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import time
-import os
-
-import itertools
-from src import frame_extract
-import yaml
 
 import cv2
+import yaml
+
+from src import frame_extract
 
 
 class SkeletonPipeline:
@@ -119,7 +119,6 @@ class SkeletonPipeline:
         opt_flags_path = Path(self.root_path) / "flags.yaml"
         assert Path.exists(opt_flags_path), "flags.yaml not found."
         return yaml.load(opt_flags_path.read_text(), Loader=yaml.SafeLoader)
-
 
     def _run_inference_pipeline(self, video_name, pid, temp_folder="temp"):
         cropped_image_dir = self._get_crop_path(video_name, pid)
@@ -241,10 +240,12 @@ class SkeletonPipeline:
 
         counter = 0
         time_tracker = 0
-        skipped_videos = [f"{'video_00' + str(i)}" for i in range(61, 71)] # this videos have a format 120x720. that make openpose crash with our current config
+        skipped_videos = [
+            f"{'video_00' + str(i)}" for i in range(61, 71)
+        ]  # this videos have a format 120x720. that make openpose crash with our current config
         video_queue_length = len(self.jaad_db.db.keys()) - len(skipped_videos)
         for video_name in self.jaad_db.db.keys():
-            if video_name not in skipped_videos: # skip videos that have a format 120x720
+            if video_name not in skipped_videos:  # skip videos that have a format 120x720
                 t0 = time.time()  # start timer
                 # set required paths
                 video_image_dir = Path(self._images_path) / video_name
@@ -276,8 +277,15 @@ class SkeletonPipeline:
                     counter += 1
                     time_tracker += time_diff
                     mean_time = time_tracker / counter
+                    time_remaining = mean_time * (video_queue_length - counter)
+
+                    time_diff_str = str(datetime.timedelta(seconds=time_diff))
+                    time_remaining_str = str(datetime.timedelta(seconds=time_remaining))
+                    mean_time_str = str(datetime.timedelta(seconds=mean_time))
+
                     print("\n")
-                    print("Elapsed time: ", time_diff, " seconds")
-                    print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
+                    print(f"Elapsed time: {time_diff_str}")
+                    print(f"Mean time per video: {mean_time_str}")
+                    print(f"Estimated time remaining: {time_remaining_str}")
                     print("Processed ", counter, " out of ", video_queue_length, " videos")
                     print("\n")
