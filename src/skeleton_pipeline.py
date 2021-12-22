@@ -143,7 +143,7 @@ class SkeletonPipeline:
         command_list = self._build_openpose_command(flags=all_flags)
         print("Commands:", command_list)
         while True:
-            files = list(itertools.islice(cropped_images, 100))
+            files = list(itertools.islice(cropped_images, 600))
             if not files:
                 print(f"Inferred {video_name}")
                 shutil.rmtree(str(temp_image_dir))
