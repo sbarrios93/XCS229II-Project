@@ -3,9 +3,13 @@ import pickle
 import sys
 import typing
 from pathlib import Path
-
+from itertools import repeat
+import glob
+from unittest import skip
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from itertools import combinations
 
+import numpy as np
 import pandas as pd
 import scipy
 import yaml
@@ -13,9 +17,65 @@ from data.jaad.jaad_data import JAAD
 from numpy.lib.stride_tricks import sliding_window_view
 from scipy import signal
 from tqdm import tqdm
-import numpy as np
+from multiprocessing import Pool
+
 from src.data_utils import JaadDatabase
 
+def run(args):
+    feature_array = pd.DataFrame()
+    range_list, sequence_dict = args # unpack the tuple
+    for n in range_list:
+        for j in range(len(sequence_dict[n])):
+            n_pid_seq = sequence_dict[n][j]
+            print(f"Processing {n_pid_seq['video_name']}, {n_pid_seq['pid']}")
+            feature_dict = {}
+            feature_counter = 0
+            for i, skeleton in enumerate(n_pid_seq['skeleton_sequence']):
+                body = BodyBuilder(skeleton)
+                frame = n_pid_seq['frame_sequence'][i]
+                # angle combinations
+                comb_names = body.get_angle_combinations()[2]
+                comb_values = body.get_angle_combinations()[0]
+                angles_dict = dict(zip(comb_names, comb_values))
+                for k, v in angles_dict.items():
+                    # [feature_0]_angle_LShoulder_RShoulder_LWrist_frame_0
+                    feature_dict[f"[feature-{feature_counter}]_ANGLE_[{k[0]}-{k[1]}{k[2]}]_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[frame-{frame}]"] = v
+                    feature_counter += 1
+
+                ## cosine features
+                cosine_dict = body.get_cosine_features()
+                for k, v in cosine_dict.items():
+                    feature_dict[f"[feature-{feature_counter}]_COSINE_[{k}]_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[frame-{frame}]"] = v
+                    feature_counter += 1
+
+                ## position relative to frame features
+                position_dict = dict(zip(body.get_position_features().index, body.get_position_features().values))
+                for k, v in position_dict.items():
+                    feature_dict[f"[feature-{feature_counter}]_POSITION-ON-FRAME-X_[{k}]_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[frame-{frame}]"] = v[0]
+                    feature_counter += 1
+                    feature_dict[f"[feature-{feature_counter}]_POSITION_ON_FRAME-Y_[{k}]_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[frame-{frame}]"] = v[1]
+                    feature_counter += 1
+
+                ## normalized_keypoints
+                normalized_keypoint_dict = dict(zip(body.get_normalized_body_parts_df().index, body.get_normalized_body_parts_df().values))
+
+                for k, v in normalized_keypoint_dict.items():
+                    feature_dict[f"[feature-{feature_counter}]_NORMALIZED-KEYPOINT-X_[{k}]_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[frame-{frame}]"] = v[0]
+                    feature_counter += 1
+                    feature_dict[f"[feature-{feature_counter}]_NORMALIZED-KEYPOINT-Y_[{k}]_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[frame-{frame}]"] = v[1]
+                    feature_counter += 1
+            try:
+                feature_dict[f"target_[{n_pid_seq['video_name']}]_{n_pid_seq['pid']}_[frame-{frame}]"] = int(n_pid_seq['intent'][0])
+            except:
+                pass
+            try:
+                feature_array = pd.concat([feature_array, pd.DataFrame.from_dict(feature_dict, orient='index')])
+            except NameError:
+                feature_array = pd.DataFrame.from_dict(feature_dict, orient='index')
+
+    if not feature_array.empty:
+        feature_array.columns = ['val']
+        feature_array.to_parquet(f"data/processed/pd_feature_array/pandas_checkpoint_{str(min(range_list))}-{str(max(range_list))}.parquet")
 
 class BuildSamples(JaadDatabase):
     def __init__(
@@ -167,7 +227,24 @@ class BuildSamples(JaadDatabase):
 
         return array_with_sequences
 
-    def _apply_savgol_filter(self, skeletons, window_size=11, polyorder=3):
+    def _interpolate_array_column(self, arr):
+        """
+        Interpolates a numpy array column
+        :param arr: Numpy array
+        :return: Numpy array with interpolated columns
+        """
+        args_where_zero = np.where(arr == 0)
+        arr_copy = arr.copy()
+
+        series = pd.Series(arr_copy)
+        series[series == 0] = np.NaN
+
+        series = series.interpolate().interpolate(method="bfill")
+        arr_copy[args_where_zero] = series.iloc[args_where_zero].values
+
+        return arr_copy
+
+    def _apply_savgol_filter(self, skeletons, window_size=11, polyorder=3, interpolate=True):
         """
         Applies Savgol filter to the array
         :param skeletons: The array of frames containing skeletons
@@ -183,7 +260,32 @@ class BuildSamples(JaadDatabase):
 
         stack = np.vstack(skeletons).reshape(-1, 75)
         for i in range(stack.shape[1]):
-            stack[:, i] = signal.savgol_filter(stack[:, i], window_size, polyorder)
+
+            # interpolate where the values are 0
+            if interpolate and np.any(stack[:, i] == 0):
+                stack[:, i] = self._interpolate_array_column(stack[:, i])
+
+            stack[:, i] = signal.savgol_filter(stack[:, i], window_size, polyorder, mode="nearest")  # run the filter
+
+            # fix getting negative values
+            zero_negative_value_indices = (np.where(stack[:, i] <= 0))[0]
+            # if there are negative value, check previous value, if its positive use it, if its negative, set ot 0.
+            # If there is no previous value, use next value with same procedure.
+            for arg in zero_negative_value_indices:
+                try:
+                    if stack[arg - 1, i] > 0:
+                        stack[arg, i] = stack[arg - 1, i]
+                    else:
+                        stack[arg, i] = 0
+                except IndexError:
+                    if stack[arg + 1, i] > 0:
+                        stack[arg, i] = stack[arg + 1, i]
+                    else:
+                        stack[arg, i] = 0
+
+            non_nan_array = stack[:, i][~np.isnan(stack[:, i])]
+            if not np.isnan(non_nan_array).all():
+                assert non_nan_array.min() >= 0, "Negative values in the array"
 
         stack = stack.reshape(-1, 25, 3)
         return stack
@@ -258,9 +360,47 @@ class BuildSamples(JaadDatabase):
 
         return sequence_dict
 
-    def _transform_features(self, sequence_dict):
-        # TODO this
-        raise NotImplementedError("Transforming features not implemented yet")
+    def _split_list(self, a, n):
+        k, m = divmod(len(a), n)
+        return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
+
+    def _make_features(self, sequence_dict):
+        """
+        Each sequence is a list of dictionaries, each dictionary is a frame.
+        Each sequence represents a pedestrian id and its video. E.g. sequence_dict[0] refers to pedestrian id 0_1_2b and video_0001. sequence_dict[1] refers to pedestrian id 0_1_3b and video_0001. Each dictionary on a sequence contains the name of the video, pid, a frame sequence (list of frames), a skeleton sequence (list of skeletons), the intent (array) and the confidence(array). Each skeleton is a list of 25 2D points, each point is a list of x, y coordinates.
+
+        The next dictionary on the sequence will be the same but for the next frame sequence. For example dictionary[0] will have the frame sequence [0, 1....,14], dictionary[1] will have the frame sequence [1, 2....,15], dictionary[2] will have the frame sequence [2, 3....,16], and so on.
+        """
+
+
+        num_workers = os.cpu_count()
+
+        list_range = list(range(len(sequence_dict)))
+
+        # skip list_id that hasa already been processed
+        skip_list_id = []
+        for filepath in glob.glob('data/processed/pd_feature_array/*.parquet'):
+            ids = filepath.split('/')[-1].split('_')[-1].split('.parquet')[0]
+            ids = ids.split('-')
+            id_range = [int(ids[0]), int(ids[1])+1]
+            id_list_range = list(range(id_range[0], id_range[1]))
+            skip_list_id += id_list_range
+
+        list_range = [i for i in list_range if i not in skip_list_id]
+
+
+        lists_to_work_on = list(self._split_list(list_range, 200))
+        args = ((lists_to_work_on[i], sequence_dict) for i in range(200))
+
+        with Pool(processes=num_workers) as pool:
+            progress_bar = tqdm(total=len(lists_to_work_on))
+            print("mapping ...")
+            results = tqdm(pool.imap(run, args), total=len(lists_to_work_on))
+            print("running ...")
+            tuple(results)  # fetch the lazy results
+            print("done")
+
+
 
     def generate_sequence_samples(
         self, image_set="all", window=15, visualize_inner_func=False, save=True, regen=False, **opts
@@ -290,7 +430,8 @@ class BuildSamples(JaadDatabase):
                 print(f"Loading saved file from {str(sample_sequence_dict_path)}")
                 with open(str(sample_sequence_dict_path), "rb") as file:
                     parsed_sequences = pickle.load(file)
-                return parsed_sequences
+                features = self._make_features(sequence_dict=parsed_sequences['sequences'])
+                return features
             else:
                 print(f"No previous pickle file found on {str(sample_sequence_dict_path)}", "Generating...", sep="\n")
 
@@ -303,27 +444,41 @@ class BuildSamples(JaadDatabase):
             sequence_data=sequence_data,
             **params,
             visualize_inner_func=visualize_inner_func,
-            savgoly_window_size=11,
+            savgol_window_size=7,
             savgol_polyorder=3,
         )
+
         if save:
             with open("data/processed/sample_sequence_dict.pkl", "wb") as file:
                 pickle.dump(parsed_sequences, file)
         # !SECTION
+        features = self._make_features(sequence_dict=parsed_sequences['sequences'])
 
-        # FIXME: This is not the final return value
-        return parsed_sequences  # return attribute
+
+        return features  # return attribute
 
 
 class BodyBuilder:
     def __init__(self, arr: np.ndarray) -> None:
         self.arr = arr
 
-        self.parts = {}
         self.body_yaml_path = "data/helper_data/body_25b_parts.yaml"
         self.body_yaml_dict = self._load_body_yaml_dict()
 
         self.body_parts_coordinates = self._map_to_dict(self.arr, self.body_yaml_dict)
+
+        self.length_body = None
+
+        self._compute_length_body()
+
+        # dataframe option
+        self.body_parts_df = pd.DataFrame(self.body_parts_coordinates, index=["x", "y"]).T
+
+        self.center_of_gravity = self._compute_center_of_gravity()
+
+        # normalize coordinates using the body length
+        self.normalized_body_parts_df = (self.body_parts_df - self.center_of_gravity) / self.length_body
+
 
     def _load_body_yaml_dict(self):
         return yaml.load(Path.read_text(Path(self.body_yaml_path)), Loader=yaml.SafeLoader)
@@ -334,33 +489,42 @@ class BodyBuilder:
             parts[v] = arr[k, :]
         return parts
 
+    def _compute_center_of_gravity(self):
+        return self.body_parts_df.sum() / len(self.body_parts_df)
+
+    def _try_euclidean(self, a, b):
+        try:
+            return scipy.spatial.distance.euclidean(a, b)
+        except ValueError:
+            return 0
+
     def _compute_length_body(self):
         # Length of head
-        self.length_Neck_HeadTop = scipy.spatial.distance.euclidean(
+        self.length_Neck_HeadTop = self._try_euclidean(
             self.body_parts_coordinates["Neck"], self.body_parts_coordinates["HeadTop"]
         )
-        self.length_Neck_LEar = scipy.spatial.distance.euclidean(
+        self.length_Neck_LEar = self._try_euclidean(
             self.body_parts_coordinates["Neck"], self.body_parts_coordinates["LEar"]
         )
-        self.length_Neck_REar = scipy.spatial.distance.euclidean(
+        self.length_Neck_REar = self._try_euclidean(
             self.body_parts_coordinates["Neck"], self.body_parts_coordinates["REar"]
         )
-        self.length_Neck_LEye = scipy.spatial.distance.euclidean(
+        self.length_Neck_LEye = self._try_euclidean(
             self.body_parts_coordinates["Neck"], self.body_parts_coordinates["LEye"]
         )
-        self.length_Neck_REye = scipy.spatial.distance.euclidean(
+        self.length_Neck_REye = self._try_euclidean(
             self.body_parts_coordinates["Neck"], self.body_parts_coordinates["REye"]
         )
-        self.length_Nose_LEar = scipy.spatial.distance.euclidean(
+        self.length_Nose_LEar = self._try_euclidean(
             self.body_parts_coordinates["Nose"], self.body_parts_coordinates["LEar"]
         )
-        self.length_Nose_REar = scipy.spatial.distance.euclidean(
+        self.length_Nose_REar = self._try_euclidean(
             self.body_parts_coordinates["Nose"], self.body_parts_coordinates["REar"]
         )
-        self.length_Nose_LEye = scipy.spatial.distance.euclidean(
+        self.length_Nose_LEye = self._try_euclidean(
             self.body_parts_coordinates["Nose"], self.body_parts_coordinates["LEye"]
         )
-        self.length_Nose_REye = scipy.spatial.distance.euclidean(
+        self.length_Nose_REye = self._try_euclidean(
             self.body_parts_coordinates["Nose"], self.body_parts_coordinates["REye"]
         )
         self.length_head = np.maximum.reduce(
@@ -377,25 +541,25 @@ class BodyBuilder:
             ]
         )
         # Length of torso
-        self.length_Neck_LHip = scipy.spatial.distance.euclidean(
+        self.length_Neck_LHip = self._try_euclidean(
             self.body_parts_coordinates["Neck"], self.body_parts_coordinates["LHip"]
         )
-        self.length_Neck_RHip = scipy.spatial.distance.euclidean(
+        self.length_Neck_RHip = self._try_euclidean(
             self.body_parts_coordinates["Neck"], self.body_parts_coordinates["RHip"]
         )
         self.length_torso = np.maximum(self.length_Neck_LHip, self.length_Neck_RHip)
 
         # Length of right leg
-        self.length_leg_right = scipy.spatial.distance.euclidean(
+        self.length_leg_right = self._try_euclidean(
             self.body_parts_coordinates["RHip"], self.body_parts_coordinates["RKnee"]
-        ) + scipy.spatial.distance.euclidean(
+        ) + self._try_euclidean(
             self.body_parts_coordinates["RKnee"], self.body_parts_coordinates["RAnkle"]
         )
 
         # Length of left leg
-        self.length_leg_left = scipy.spatial.distance.euclidean(
+        self.length_leg_left = self._try_euclidean(
             self.body_parts_coordinates["LHip"], self.body_parts_coordinates["LKnee"]
-        ) + scipy.spatial.distance.euclidean(
+        ) + self._try_euclidean(
             self.body_parts_coordinates["LKnee"], self.body_parts_coordinates["LAnkle"]
         )
 
@@ -408,6 +572,152 @@ class BodyBuilder:
         # Check all samples have length_body of 0
         assert (self.length_body.astype(int)) > 0, "Length of body is 0"
 
+    def get_normalized_body_parts_df(self):
+        return self.normalized_body_parts_df
 
-builder = BuildSamples(jaad_object=JAAD("data/jaad"))
-data = builder.generate_sequence_samples()
+    def get_body_parts_df(self):
+        return self.body_parts_df
+
+    def get_body_parts_coordinates(self):
+        return self.body_parts_coordinates
+
+    def get_length_body(self):
+        return self.length_body
+
+    def get_length_head(self):
+        return self.length_head
+
+    def get_length_torso(self):
+        return self.length_torso
+
+    def get_length_leg_right(self):
+        return self.length_leg_right
+
+    def get_length_leg_left(self):
+        return self.length_leg_left
+
+    def get_length_leg(self):
+        return self.length_leg
+
+    def get_length_body_parts(self):
+        return self.length_body
+
+    def get_euclidean_normalized_matrix(self):
+        return pd.DataFrame(
+            scipy.spatial.distance.cdist(self.normalized_body_parts_df, self.normalized_body_parts_df),
+            columns=self.normalized_body_parts_df.index,
+            index=self.normalized_body_parts_df.index,
+        )
+
+    def get_cosine_normalized_matrix(self):
+        return pd.DataFrame(
+            scipy.spatial.distance.cdist(self.normalized_body_parts_df, self.normalized_body_parts_df, metric="cosine"),
+            columns=self.normalized_body_parts_df.index,
+            index=self.normalized_body_parts_df.index,
+        )
+
+    def get_cosine_matrix(self):
+        return pd.DataFrame(
+            scipy.spatial.distance.cdist(self.body_parts_df, self.body_parts_df, metric="cosine"),
+            columns=self.body_parts_df.index,
+            index=self.body_parts_df.index,
+        )
+
+    def _calculate_angle(self, p1, p2, p3):
+        """
+        Calculate angle between three points
+        """
+        v1 = p2 - p1
+        v2 = p3 - p1
+        return np.rad2deg(np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))))
+
+    def get_angle_combinations(self):
+        n_features = len(self.normalized_body_parts_df)
+        # Avoid this features:  Nose LEye REye LEar REar LElbow RElbow Neck HeadTop LBigToe LSmallToe LHeel RBigToe RSmallToe RHeel
+        avoid_features = [0, 1, 2, 3, 4, 7, 8, 17, 18, 19, 20, 21, 22, 23, 24]
+
+        length_array = [i for i in range(n_features) if i not in avoid_features]
+
+        combs = list(combinations(length_array, 3))
+
+        angles = []
+
+        for trio in combs:
+            angle = self._calculate_angle(
+                self.normalized_body_parts_df.iloc[trio[0]],
+                self.normalized_body_parts_df.iloc[trio[1]],
+                self.normalized_body_parts_df.iloc[trio[2]],
+            )
+            angles.append(angle)
+
+        named_combs = []
+        for comb in combs:
+            named_combs.append(
+                (self.body_yaml_dict[comb[0]], self.body_yaml_dict[comb[1]], self.body_yaml_dict[comb[2]])
+            )
+
+        return np.array(angles), combs, named_combs
+
+    def get_cosine_features(self):
+        """
+        Extract cosine features from the cosine matrix. We just need one triangle and not include diagonal elements. Also the features of the face I don't think are useful.
+        """
+        avoid_features = [0, 1, 2, 3, 4, 17, 18]  # ['Nose', 'LEye', 'REye', 'LEar', 'REar', 'Neck', 'HeadTop']
+        avoid_features = [self.body_yaml_dict[i] for i in avoid_features]
+
+        value_dict = {}
+        for i in self.get_cosine_normalized_matrix().index:
+            for j in self.get_cosine_normalized_matrix().columns:
+                if i != j:
+                    if i not in avoid_features and j not in avoid_features:
+                        if f"{i}-{j}" not in value_dict.keys() and f"{j}-{i}" not in value_dict.keys():
+                            value_dict[f"{i}-{j}"] = self.get_cosine_normalized_matrix().loc[i, j]
+        return value_dict
+
+    def get_euclidean_features(self):
+        """
+        Extract cosine features from the cosine matrix. We just need one triangle and not include diagonal elements. Also the features of the face I don't think are useful.
+        """
+        avoid_features = [0, 1, 2, 3, 4, 17, 18]  # ['Nose', 'LEye', 'REye', 'LEar', 'REar', 'Neck', 'HeadTop']
+        avoid_features = [self.body_yaml_dict[i] for i in avoid_features]
+
+        counter = 0
+        value_dict = {}
+        for i in self.get_euclidean_normalized_matrix()().index:
+            for j in self.get_euclidean_normalized_matrix()().columns:
+                if i != j:
+                    if i not in avoid_features and j not in avoid_features:
+                        if f"{i}-{j}" not in value_dict.keys() and f"{j}-{i}" not in value_dict.keys():
+                            counter += 1
+                            print(counter, f"{i}-{j}")
+                            value_dict[f"{i}-{j}"] = self.get_euclidean_normalized_matrix()().loc[i, j]
+        return value_dict
+
+    def get_position_features(self):
+        """
+        Extract position from each body part coordinate in relation with the frame size (1920x1080)
+        """
+        return self.get_body_parts_df() / np.array([1920, 1080])
+
+    def save_dict(self, dict_to_save, file_name):
+        dir_path = Path('data/input_features')
+        Path.mkdir(dir_path, parents=True, exist_ok=True)
+
+        with open(f"{dir_path}/{file_name}.pkl", "wb") as f:
+            pickle.dump(dict_to_save, f)
+
+        print(f"{file_name}.pkl saved")
+
+
+    def save_numpy(self, numpy_to_save, file_name, dir_path='data/input_features'):
+        dir_path = Path(dir_path)
+        Path.mkdir(dir_path, parents=True, exist_ok=True)
+
+        np.save(f"{dir_path}/{file_name}.npy", numpy_to_save)
+
+        print (f"{file_name}.npy saved")
+
+
+if __name__ == '__main__':
+    builder = BuildSamples(jaad_object=JAAD("data/jaad"))
+    data = builder.generate_sequence_samples()

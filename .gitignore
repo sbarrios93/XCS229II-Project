@@ -7,6 +7,9 @@ data/**/*.xml
 data/**/*.pkl
 openpose_processing
 
+# no parquet files
+*.parquet
+
 # no pickle files
 *.pkl
 
