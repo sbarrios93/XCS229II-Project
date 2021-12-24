@@ -1,5 +1,6 @@
 import os
 import pickle
+from sre_constants import SUCCESS
 import sys
 import typing
 from pathlib import Path
@@ -162,6 +163,8 @@ class BuildSamples(JaadDatabase):
         :param sequence_data: The sequence data to parse. Comes in the form dict(image, pid, intent)
         :param window: The window size to use
         """
+        fail_count = 0
+        success_count = 0
 
         params = {
             "savgol_window_size": 11,
@@ -215,15 +218,25 @@ class BuildSamples(JaadDatabase):
                 len(lst["frame_sequence"]) == len(array) for lst in array_with_sequences
             ), "Skeleton length does not match array length"
             if frame_skeleton is not None:
-                data = {
-                    "video_name": video_name,
-                    "pid": pid,
-                    "frame_sequence": array,
-                    "skeleton_sequence": skeletons_single_sequence,
-                    "confidence": confidence_single_sequence,
-                    "intent": sliding_windows_intent_array[array_ix].flatten(),
-                }
-                array_with_sequences.append(data)
+                if len(skeletons_single_sequence) ==  window:
+                    data = {
+                        "video_name": video_name,
+                        "pid": pid,
+                        "frame_sequence": array,
+                        "skeleton_sequence": skeletons_single_sequence,
+                        "confidence": confidence_single_sequence,
+                        "intent": sliding_windows_intent_array[array_ix].flatten(),
+                    }
+                    array_with_sequences.append(data)
+                    success_count += 1
+                else: # not enough frames
+                    # print(f"Not enough frames for sequence on {video_name}, {pid}, {array}")
+                    fail_count += 1
+
+        try:
+            tqdm.write(str(fail_count/(success_count+fail_count)))
+        except:
+            tqdm.write(str(100))
 
         return array_with_sequences
 
@@ -373,7 +386,7 @@ class BuildSamples(JaadDatabase):
         """
 
 
-        num_workers = os.cpu_count()
+        num_workers = os.cpu_count()-4
 
         list_range = list(range(len(sequence_dict)))
 
@@ -386,11 +399,18 @@ class BuildSamples(JaadDatabase):
             id_list_range = list(range(id_range[0], id_range[1]))
             skip_list_id += id_list_range
 
+
+
+
+        # assert there are no duplicates in skip list. This would mean we have duplicate ids in our files
+        assert len(skip_list_id) == len(set(skip_list_id)), f"Duplicate ids in skip list (Duplicate ids in files) {[x for n, x in enumerate(skip_list_id) if x in skip_list_id[:n]]}"
+
         list_range = [i for i in list_range if i not in skip_list_id]
 
+        splits = min(len(list_range), 200)
 
-        lists_to_work_on = list(self._split_list(list_range, 200))
-        args = ((lists_to_work_on[i], sequence_dict) for i in range(200))
+        lists_to_work_on = list(self._split_list(list_range, splits))
+        args = ((lists_to_work_on[i], sequence_dict) for i in range(splits))
 
         with Pool(processes=num_workers) as pool:
             progress_bar = tqdm(total=len(lists_to_work_on))
@@ -720,4 +740,4 @@ class BodyBuilder:
 
 if __name__ == '__main__':
     builder = BuildSamples(jaad_object=JAAD("data/jaad"))
-    data = builder.generate_sequence_samples()
+    data = builder.generate_sequence_samples(regen=False)
