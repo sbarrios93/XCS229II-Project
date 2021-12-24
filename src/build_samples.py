@@ -77,6 +77,7 @@ def run(args):
     if not feature_array.empty:
         feature_array.columns = ['val']
         feature_array.to_parquet(f"data/processed/pd_feature_array/pandas_checkpoint_{str(min(range_list))}-{str(max(range_list))}.parquet")
+        print(f"Saved checkpoint {str(min(range_list))}-{str(max(range_list))}")
 
 class BuildSamples(JaadDatabase):
     def __init__(

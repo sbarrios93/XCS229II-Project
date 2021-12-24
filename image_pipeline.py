@@ -3,7 +3,6 @@ from src import data_utils, skeleton_pipeline
 import argparse
 
 RUN_INFERENCE = False
-
 parser = argparse.ArgumentParser(description="Image pipeline")
 
 # take as argument the value RUN_INFERENCE as --run-inference

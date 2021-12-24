@@ -11,7 +11,7 @@ openpose_processing
 *.parquet
 
 # no pickle files
-*.pkl
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
