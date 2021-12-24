@@ -1,16 +1,16 @@
+import datetime
+import itertools
 import os
 import shutil
 import subprocess
+import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import time
-import os
-
-import itertools
-from src import frame_extract
-import yaml
 
 import cv2
+import yaml
+
+from src import frame_extract
 
 
 class SkeletonPipeline:
@@ -120,18 +120,6 @@ class SkeletonPipeline:
         assert Path.exists(opt_flags_path), "flags.yaml not found."
         return yaml.load(opt_flags_path.read_text(), Loader=yaml.SafeLoader)
 
-    def _cropped_image_loader(self, cropped_image_dir, temp_folder="temp"):
-        cropped_images = cropped_image_dir.glob("*.png")
-
-        Path.mkdir(cropped_image_dir / temp_folder, parents=True, exist_ok=True)
-
-        while True:
-            files = list(itertools.islice(cropped_images, 20))
-            if not files:
-                break
-            for file in files:
-                shutil.copy(str(file), str(cropped_image_dir / temp_folder))
-
     def _run_inference_pipeline(self, video_name, pid, temp_folder="temp"):
         cropped_image_dir = self._get_crop_path(video_name, pid)
         temp_image_dir = cropped_image_dir / temp_folder
@@ -154,9 +142,10 @@ class SkeletonPipeline:
         command_list = self._build_openpose_command(flags=all_flags)
         print("Commands:", command_list)
         while True:
-            files = list(itertools.islice(cropped_images))
+            files = list(itertools.islice(cropped_images, 600))
             if not files:
                 print(f"Inferred {video_name}")
+                shutil.rmtree(str(temp_image_dir))
                 return None
             for file in files:
                 shutil.copy(str(file), str(cropped_image_dir / temp_folder))
@@ -165,7 +154,6 @@ class SkeletonPipeline:
             os.chdir(self.root_path)
             for f in files:
                 os.remove(str(temp_image_dir / f.name))
-        shutil.rmtree(str(temp_image_dir))
 
     def _run_extraction_pipeline(self, video_image_dir, video_name):
         # Check if we already have the extracted frames or we need to extract them
@@ -252,31 +240,52 @@ class SkeletonPipeline:
 
         counter = 0
         time_tracker = 0
+        skipped_videos = [
+            f"{'video_00' + str(i)}" for i in range(61, 71)
+        ]  # this videos have a format 120x720. that make openpose crash with our current config
+        video_queue_length = len(self.jaad_db.db.keys()) - len(skipped_videos)
         for video_name in self.jaad_db.db.keys():
-            t0 = time.time()  # start timer
-            # set required paths
-            video_image_dir = Path(self._images_path) / video_name
+            if video_name not in skipped_videos:  # skip videos that have a format 120x720
+                t0 = time.time()  # start timer
+                # set required paths
+                video_image_dir = Path(self._images_path) / video_name
 
-            video_pipeline = self._single_video_pipeline_constructor(video_name, **params)
+                video_pipeline = self._single_video_pipeline_constructor(video_name, **params)
 
-            crop_pid_list = [k for k, v in video_pipeline["crop"].items() if v]
-            infer_pid_list = [k for k, v in video_pipeline["inf"].items() if v]
+                crop_pid_list = [k for k, v in video_pipeline["crop"].items() if v]
+                infer_pid_list = [k for k, v in video_pipeline["inf"].items() if v]
 
-            if video_pipeline["ext"]:
-                self._run_extraction_pipeline(video_image_dir, video_name)
-            else:
-                print("Extraction for video {} not required.".format(video_name))
-            for pid in crop_pid_list:
-                self._run_crop_pipeline(video_name, pid)
-            for pid in infer_pid_list:
-                self._run_inference_pipeline(video_name, pid)
-            counter += 1
-            time_diff = time.time() - t0
-            time_tracker += time_diff
-            mean_time = time_tracker / counter
-            video_queue_length = len(self.jaad_db.db.keys())
-            print("\n")
-            print("Elapsed time: ", time_diff, " seconds")
-            print("Time remaining: ", mean_time * video_queue_length - counter, " seconds")
-            print("Processed ", counter, " out of ", video_queue_length, " videos")
-            print("\n")
+                if video_pipeline["ext"]:
+                    self._run_extraction_pipeline(video_image_dir, video_name)
+                else:
+                    print("Extraction for video {} not required.".format(video_name))
+                for pid in crop_pid_list:
+                    self._run_crop_pipeline(video_name, pid)
+                for pid in infer_pid_list:
+                    self._run_inference_pipeline(video_name, pid)
+
+                if os.path.exists(video_image_dir):
+                    print("Deleting image path {}".format(video_image_dir))
+                    while os.path.exists(video_image_dir):
+                        shutil.rmtree(video_image_dir)
+                    print("Removed frames path for video {}".format(video_name))
+
+                time_diff = time.time() - t0
+                if time_diff < 10:
+                    video_queue_length -= 1
+                else:
+                    counter += 1
+                    time_tracker += time_diff
+                    mean_time = time_tracker / counter
+                    time_remaining = mean_time * (video_queue_length - counter)
+
+                    time_diff_str = str(datetime.timedelta(seconds=time_diff))
+                    time_remaining_str = str(datetime.timedelta(seconds=time_remaining))
+                    mean_time_str = str(datetime.timedelta(seconds=mean_time))
+
+                    print("\n")
+                    print(f"Elapsed time: {time_diff_str}")
+                    print(f"Mean time per video: {mean_time_str}")
+                    print(f"Estimated time remaining: {time_remaining_str}")
+                    print("Processed ", counter, " out of ", video_queue_length, " videos")
+                    print("\n")

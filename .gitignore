@@ -1,10 +1,17 @@
-.vscode 
+.vscode
 # avoid media files from dataset
 data/**/*.mp4
 data/**/*.json
 data/**/*.png
 data/**/*.xml
+data/**/*.pkl
 openpose_processing
+
+# no parquet files
+*.parquet
+
+# no pickle files
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

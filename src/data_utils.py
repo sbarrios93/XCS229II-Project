@@ -59,6 +59,14 @@ class JaadDatabase:
             if verbose:
                 print(f"Database saved to {self.processed_filepath}")
 
+    def read_from_pickle(self, filepath: str) -> dict:
+        """
+        Reads a pickle file and returns the database.
+        """
+        with open(filepath, "rb") as handle:
+            self.db = pickle.load(handle)
+        return self.db
+
     def _get_bbox(self, video_name: str, pid: str, return_type: str = "array"):
         """get bbox from the database
 
@@ -73,10 +81,10 @@ class JaadDatabase:
             return self.db[video_name]["ped_annotations"][pid]["bbox"]
         else:
             raise ValueError(f"Invalid return_type: {return_type}")
-    
+
     def _get_cropped_box(self, video_name: str, pid: str, return_type: str = "array"):
         """get cropped box from the database
-        
+
         Args:
             video_name (str): video name
             pid (str): pedestrian id
@@ -85,28 +93,76 @@ class JaadDatabase:
         if not self.cropped_run:
             print("Cropped box not added to database, running add_cropped_bbox() first.")
             self.add_cropped_bbox()
-        
         if return_type == "array":
             return np.array(self.db[video_name]["ped_annotations"][pid]["cropped_box"])
         elif return_type == "list":
             return self.db[video_name]["ped_annotations"][pid]["cropped_box"]
         else:
             raise ValueError(f"Invalid return_type: {return_type}")
-        
-        
-    def _expand_bbox(self, arr: np.ndarray, padding: float = 0.3) -> list:
+
+    def _expand_bbox(self, arr: np.ndarray) -> list:
         """
         Structure of the array
         [[xtl, ytl, xbr, ybr], [xtl, ytl, xbr, ybr], ...]
         """
-        arr[:, 0] -= (arr[:, 2] - arr[:, 0]) * padding
-        arr[:, 1] -= (arr[:, 3] - arr[:, 1]) * padding
-        arr[:, 2] += (arr[:, 2] - arr[:, 0]) * padding
-        arr[:, 3] += (arr[:, 3] - arr[:, 1]) * padding
+        VID_HEIGHT = 1080
+        VID_WIDTH = 1920
+
+        bbox_width = 480
+        bbox_height = 1080
+
+        # for arr[0] (left x side)
+
+        # force bbox to be th size 480x1080:
+        # horizontal sidez
+        f0 = arr[:, 0] - (bbox_width - (arr[:, 2] - arr[:, 0])) / 2  # left x side
+        f2 = arr[:, 2] + (bbox_width - (arr[:, 2] - arr[:, 0])) / 2  # right x side
+
+        # if we have a negative value at the left side, we need to move the bbox to the right
+        # set the x values to [x, bbox_width] in that case
+        f2[f0 < 0] = bbox_width
+        f0[f0 < 0] = 0
+
+        # if we have values over 1920, we need to move the bbox to the left
+        # set the x values to [x, 1920] in that case
+        f0[f2 > VID_WIDTH] = VID_WIDTH - bbox_width
+        f2[f2 > VID_WIDTH] = VID_WIDTH
+
+        ## now do the same for the vertical side
+        f1 = arr[:, 1] - (bbox_height - (arr[:, 3] - arr[:, 1])) / 2  # top y side
+        f3 = arr[:, 3] + (bbox_height - (arr[:, 3] - arr[:, 1])) / 2  # bottom y side
+
+        # if we have a negative value at the top side, we need to move the bbox down
+        f3[f1 < 0] = bbox_height
+        f1[f1 < 0] = 0
+
+        # if we have values over 1080, we need to move the bbox up
+        f1[f3 > VID_HEIGHT] = VID_HEIGHT - bbox_height
+        f3[f3 > VID_HEIGHT] = VID_HEIGHT
+
+        arr[:, 0] = f0
+        arr[:, 1] = f1
+        arr[:, 2] = f2
+        arr[:, 3] = f3
+
+        # check everything is correct
+        assert np.all(arr[:, 0] >= 0), "Left x side is negative"
+        assert np.all(arr[:, 1] >= 0), "Top y side is negative"
+        assert np.all(arr[:, 2] <= VID_WIDTH), "Right x side is greater than 1920"
+        assert np.all(arr[:, 3] <= VID_HEIGHT), "Bottom y side is greater than 1080"
+        assert np.all(arr[:, 2] >= arr[:, 0]), "Right x side is less than left x side"
+        assert np.all(arr[:, 3] >= arr[:, 1]), "Bottom y side is less than top y side"
+        assert np.all(arr[:, 2] - arr[:, 0] == bbox_width), "Bbox Width is not 480"
+        assert np.all(arr[:, 3] - arr[:, 1] == bbox_height), "Bbox Height is not 1080"
+
+        # arr[:, 0] -= (arr[:, 2] - arr[:, 0]) * padding
+        # arr[:, 1] -= (arr[:, 3] - arr[:, 1]) * padding
+        # arr[:, 2] += (arr[:, 2] - arr[:, 0]) * padding
+        # arr[:, 3] += (arr[:, 3] - arr[:, 1]) * padding
 
         np.clip(arr, 0, None, out=arr)
-        np.clip(arr[:, 2], None, 1920, out=arr[:, 2])
-        np.clip(arr[0, 3], None, 1080, out=arr[:, 3])
+        np.clip(arr[:, 2], None, VID_WIDTH, out=arr[:, 2])
+        np.clip(arr[0, 3], None, VID_HEIGHT, out=arr[:, 3])
 
         arr = np.floor(arr).astype(int)
         return arr.tolist()
@@ -117,18 +173,12 @@ class JaadDatabase:
         including the optional padding
         """
 
-        params = {
-            "padding": 0.3,
-        }
-        assert all(k in params for k in opts.keys()), "Wrong option(s)."
-        params.update(opts)
-
         for video_name in self.db:
             for pid in self.db[video_name]["ped_annotations"]:
-                bbox_arr = self._get_bbox(video_name, pid, return_type="array")
-                self.db[video_name]["ped_annotations"][pid]["cropped_box"] = self._expand_bbox(
-                    bbox_arr, params["padding"]
-                )
+                bbox_arr = self._get_bbox(
+                    video_name, pid, return_type="array"
+                )  # array in the shape [frames, 4 (Coordinates)]
+                self.db[video_name]["ped_annotations"][pid]["cropped_box"] = self._expand_bbox(bbox_arr)
         self.cropped_run = True
         self._save_database()
 
@@ -157,19 +207,19 @@ class JaadDatabase:
         transformed_coordinates = cropped_box[:2] * (coordinates_arr > 0) + coordinates_arr
 
         return np.concatenate([transformed_coordinates, confidence_arr[:, np.newaxis]], axis=1)
-    
-    def _select_best_skeleton(self, skeleton_candidates: list,  bbox):
-    
+
+    def _select_best_skeleton(self, skeleton_candidates: list, bbox):
+
         assert isinstance(skeleton_candidates, list), "skeleton_candidates must be a list."
-        
+
         scores = np.array([])
         for candidate in skeleton_candidates:
-            score = np.sum(((candidate[:, :2]>=bbox[:2]) & (candidate[:, :2]<=bbox[2:])).all(1))
+            score = np.sum(((candidate[:, :2] >= bbox[:2]) & (candidate[:, :2] <= bbox[2:])).all(1))
             scores = np.append(scores, score)
-        
+
         # choose the best skeleton
         return skeleton_candidates[np.argmax(scores)]
-            
+
     def _parse_keypoints(
         self,
         video_keypoint_filepath,
@@ -189,20 +239,18 @@ class JaadDatabase:
 
         # check that the key 'people' exists in the json file
         assert people_key in content, f"Key {people_key} does not exist in the json file."
-        
         # if we didn't pass an integer as frame id, then we need to get it from the file name
         if frame_id is None:
             frame_id = int(video_keypoint_filepath.split("/")[-1].split("_")[0])
         assert isinstance(frame_id, int), "frame_id must be an integer."
-        
+
         # because the frames might not start from 0 (if a person appears after only some frames), we need to get the index of this frame
-        frame_ix = self.db[video_name]['ped_annotations'][pid]['frames'].index(frame_id)
+        frame_ix = self.db[video_name]["ped_annotations"][pid]["frames"].index(frame_id)
 
         # the way we are bulding the algorithm is with running skeleton inference over cropped areas of the video. Even so, it may be the case that people overlap in a cropped area, making the openpose algorithm output more than one skeleton. In that case, we will have more than one skeleton per person. We need to define which one is the correct.
 
         # let's check if there's one more than one skeleton per person
         skeleton_count = len(content[people_key])
-        
         # get all cropped_boxes
         cropped_boxes = self._get_cropped_box(video_name, pid, return_type="array")
 
@@ -212,23 +260,20 @@ class JaadDatabase:
             skeleton_array = np.array(content[people_key][0][keypoints_subkey])
             # run the _calculate_keypoints function
             return self._calculate_keypoints(cropped_boxes[frame_ix], skeleton_array)
-        
         elif skeleton_count > 1:
             bboxes = self._get_bbox(video_name, pid, return_type="array")
             skeleton_candidates = []
             candidate_scores = []
             for skeleton in content[people_key]:
-                skeleton_array = np.array(skeleton[keypoints_subkey]) # to np.array
-                fitted_skeleton = self._calculate_keypoints(cropped_boxes[frame_ix], skeleton_array) # run function
-                skeleton_candidates.append(fitted_skeleton) # append candidate to list
-                return self._select_best_skeleton(skeleton_candidates, bboxes[frame_ix]) # run function
+                skeleton_array = np.array(skeleton[keypoints_subkey])  # to np.array
+                fitted_skeleton = self._calculate_keypoints(cropped_boxes[frame_ix], skeleton_array)  # run function
+                skeleton_candidates.append(fitted_skeleton)  # append candidate to list
+                return self._select_best_skeleton(skeleton_candidates, bboxes[frame_ix])  # run function
         else:
-             return None 
+            return None
 
     def append_keypoints(self, keypoint_dir="keypoints", **opts):
-        """
-         
-        """
+        """ """
 
         # set optional parameters
         params = {"people_key": "people", "keypoints_subkey": "pose_keypoints_2d"}
@@ -241,12 +286,11 @@ class JaadDatabase:
             print(f"Keypoint directory {self.keypoint_path} does not exist.")
             print("Creating keypoint directory...")
             Path.mkdir(Path(self.keypoint_path), parents=True, exist_ok=True)
-            
 
         # for each video in the database, add the keypoints to the database
         for video_name in self.db:
             for pid in self.db[video_name]["ped_annotations"]:
-                video_keypoint_filepath = os.path.join(self.keypoint_path,video_name, "json" , pid)
+                video_keypoint_filepath = os.path.join(self.keypoint_path, video_name, "json", pid)
                 if "b" not in pid:
                     continue
                 if not os.path.exists(video_keypoint_filepath):
@@ -254,12 +298,13 @@ class JaadDatabase:
                     print(f"{video_keypoint_filepath} does not exist.")
                     continue
                 processed_keypoints = []
-                
                 # get all the keypoint files in the directory
                 keypoint_files = glob.glob(video_keypoint_filepath + "/*.json")
                 # sort the keypoint files by frame id
                 sorted_keypoint_files = sorted(keypoint_files)
-                
+
                 for file in sorted_keypoint_files:
                     processed_keypoints.append(self._parse_keypoints(file, video_name, pid))
                 self.db[video_name]["ped_annotations"][pid]["skeleton_keypoints"] = processed_keypoints
+
+        self._save_database()
