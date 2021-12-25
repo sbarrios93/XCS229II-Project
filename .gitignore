@@ -7,6 +7,12 @@ data/**/*.xml
 data/**/*.pkl
 openpose_processing
 
+data/processed
+
+data/*.pkl
+data/*.npy
+data/*.zip
+
 # no parquet files
 *.parquet
 
